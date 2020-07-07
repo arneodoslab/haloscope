@@ -1,4 +1,4 @@
-# Install script for directory: /home/po524/Documents/sample1/HandsOn2
+# Install script for directory: /Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,49 +27,37 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
-# Install shared libraries without execute permission?
-if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
-  set(CMAKE_INSTALL_SO_NO_EXE "1")
-endif()
-
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/SLACtut")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/SLACtut" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/SLACtut")
-    file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/SLACtut"
-         RPATH "")
-  endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/po524/Documents/sample1/HandsOn2/SLACtut")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/SLACtut" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/SLACtut")
-    file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/SLACtut"
-         OLD_RPATH "/opt/geant4/geant4-10.4/lib:/opt/anaconda3/lib:/usr/local/lib:"
-         NEW_RPATH "")
+    execute_process(COMMAND /usr/bin/install_name_tool
+      -delete_rpath "/Users/panos/geant4.10.06-install/lib"
+      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/SLACtut")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/SLACtut")
+      execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -u -r "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/SLACtut")
     endif()
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/SLACtut" TYPE FILE FILES
-    "/home/po524/Documents/sample1/HandsOn2/icons.mac"
-    "/home/po524/Documents/sample1/HandsOn2/gui.mac"
-    "/home/po524/Documents/sample1/HandsOn2/run.png"
-    "/home/po524/Documents/sample1/HandsOn2/init.mac"
-    "/home/po524/Documents/sample1/HandsOn2/init_vis.mac"
-    "/home/po524/Documents/sample1/HandsOn2/run1.mac"
-    "/home/po524/Documents/sample1/HandsOn2/run2.mac"
-    "/home/po524/Documents/sample1/HandsOn2/vis.mac"
-    "/home/po524/Documents/sample1/HandsOn2/scoring.mac"
-    "/home/po524/Documents/sample1/HandsOn2/draw.mac"
-    "/home/po524/Documents/sample1/HandsOn2/drawSlice.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/icons.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/gui.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/run.png"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/init.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/init_vis.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/run1.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/run2.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/vis.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/scoring.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/draw.mac"
+    "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/drawSlice.mac"
     )
 endif()
 
@@ -81,5 +69,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/po524/Documents/sample1/HandsOn2/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
