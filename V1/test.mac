@@ -1,0 +1,5 @@
+
+#Run 1
+/detector/outName out/100.csv
+/detector/zpos 100
+/run/beamOn 1000

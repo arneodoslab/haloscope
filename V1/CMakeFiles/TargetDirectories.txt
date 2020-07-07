@@ -1,0 +1,8 @@
+/home/po524/Documents/sample1/HandsOn2/CMakeFiles/install/strip.dir
+/home/po524/Documents/sample1/HandsOn2/CMakeFiles/install/local.dir
+/home/po524/Documents/sample1/HandsOn2/CMakeFiles/Tutorial.dir
+/home/po524/Documents/sample1/HandsOn2/CMakeFiles/edit_cache.dir
+/home/po524/Documents/sample1/HandsOn2/CMakeFiles/rebuild_cache.dir
+/home/po524/Documents/sample1/HandsOn2/CMakeFiles/SLACtut.dir
+/home/po524/Documents/sample1/HandsOn2/CMakeFiles/list_install_components.dir
+/home/po524/Documents/sample1/HandsOn2/CMakeFiles/install.dir
