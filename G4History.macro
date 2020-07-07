@@ -1,0 +1,33 @@
+/run/verbose 2
+/run/initialize
+/control/execute vis.mac
+/control/verbose 2
+/vis/open OGL 1000x1000-0+0
+/vis/sceneHandler/create OGL
+/vis/viewer/create ! ! 1000x1000-0+0
+/vis/viewer/refresh
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+/vis/drawVolume
+/vis/scene/create
+/vis/scene/add/volume world
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointThetaPhi 45 0
+/vis/viewer/set/style surface
+/vis/scene/add/trajectories smooth
+/tracking/storeTrajectory 2
+/vis/scene/notifyHandlers
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+/vis/scene/notifyHandlers scene-0
+/vis/viewer/set/autoRefresh true
+/vis/viewer/refresh
+/vis/verbose warnings
+/vis/scene/endOfEventAction accumulate
+/detector/zpos 100
+/run/reinitializeGeometry
+/vis/scene/notifyHandlers scene-0
+/vis/viewer/set/viewpointThetaPhi 90 0
+/vis/viewer/refresh
