@@ -62,7 +62,7 @@ class Ray:
             t = (np.array([R[1],-R[0]]))
             theta2 = (np.arcsin(n1/n2*np.sin(theta1)))
             noise = np.random.normal(0,lens.noiseStd)*lens.noiseAmplitude
-            theta = arg(d) - (theta1 - theta2)*np.sign(d[0]*t[1]-d[1]*t[0])*np.sign(d.dot(t))
+            theta = arg(d) - (theta1 - theta2)*np.sign(d[0]*t[1]-d[1]*t[0])*np.sign(d.dot(t)) + noise
             if self.VERBOSE: print("\tCross: ",d[0]*t[1]-d[1]*t[0])
             if self.VERBOSE: print("\tDot  : ",d.dot(t))
             self.direction = np.append(self.direction,[np.array([np.cos(theta),np.sin(theta)])],axis=0)
@@ -111,4 +111,4 @@ class Ray:
         return self.ncurrent
 
     def draw(self, ax, color = 'lime', lw = 0.5):
-        ax.plot(self.points.T[0],self.points.T[1],c=color,lw=lw)
+        return ax.plot(self.points.T[0],self.points.T[1],c=color,lw=lw)

@@ -51,7 +51,7 @@ class Arc:
 
         ax.scatter(self.R*np.cos(angles[0])+self.C[0],self.R*np.sin(angles[0])+self.C[1])
         
-        ax.plot(ptsX,ptsY, c=color, label=label)
+        return ax.plot(ptsX,ptsY, c=color, label=label)
 
     def print(self):
         print("Object of type arc.\n\n\tC = "+str(self.C)\
