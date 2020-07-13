@@ -1,5 +1,4 @@
 import numpy as np
-import seaborn
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons, TextBox
 import scipy.constants as c
@@ -23,15 +22,15 @@ VERBOSE = False
 
 # Create lens 1
 arc1 = Arc(C=np.array([-1,0]),R=2,dirPositive=False)
-arc2 = Arc(C=np.array([-5,0]),R=4,dirPositive=True)
+arc2 = Arc(C=np.array([-15,0]),R=14,dirPositive=True)
 lens = Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude)
 
 # Create lens 2
-arc3 = Arc(C=np.array([-2.5,0]),R=2.5,dirPositive=True)
-arc4 = Arc(C=np.array([-1.5,0]),R=2,dirPositive=True)
+arc3 = Arc(C=np.array([1,0]),R=1,dirPositive=False)
+arc4 = Arc(C=np.array([2,0]),R=1.5,dirPositive=False)
 lens2 = Lens(arc3,arc4, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude)
 
-lenses = [lens,lens2]
+lenses = [lens]
 
 # Create rays list
 rays = []
@@ -41,7 +40,7 @@ detector = Detector(position=np.array([1.,0.]),height=1)
 
 
 # GUI
-controlH = 0.8
+controlH = 0.75
 dist = 0.05
 right = 0.8
 left = 0.2
@@ -62,13 +61,16 @@ detectorAx = fig.add_subplot(212)
 # Add Sliders
 spawn = np.arange(*RayGenerationRange,0.1)
 
-axNumber = plt.axes([left, controlH, 0.50, 0.03])
+axBandwidth = plt.axes([left,controlH,0.5,0.03])
+sBandwidth = Slider(axBandwidth, 'Light Bandwidth', 0.01,10, valinit=3, valstep=0.01, color=color)
+
+axNumber = plt.axes([left, controlH+dist, 0.50, 0.03])
 sNumber = Slider(axNumber, 'Number of Rays', 1, 1000, valinit=Nrays, valstep=1, color=color)
 
-axEnergy = plt.axes([left, controlH+dist, 0.50, 0.03])
+axEnergy = plt.axes([left, controlH+2*dist, 0.50, 0.03])
 sEnergy = Slider(axEnergy, 'Energy of Rays', *RayEnergyRange, valinit=2, valstep=0.01, color=color)
 
-axDetector = plt.axes([left,controlH+2*dist,0.5,0.03])
+axDetector = plt.axes([left,controlH+3*dist,0.5,0.03])
 sDetector = Slider(axDetector, 'Detector Pos', *xlim, valinit=1, valstep=0.01, color=color)
 
 # Add Buttons
@@ -76,18 +78,18 @@ axShoot = plt.axes([right, controlH, 0.1, 0.04])
 bShoot = Button(axShoot, 'Shoot', hovercolor=color, color='0.975')
 
 # Add Radio Buttons
-axRadio = plt.axes([right,controlH+0.05,0.1,0.08])
+axRadio = plt.axes([right,controlH+dist,0.1,0.08])
 radio = RadioButtons(axRadio, ('random','linear'),active = 1)
 
 # Add text box inputs
-axDetectorWidth = plt.axes([left,controlH+0.15,0.1,0.04])
+axDetectorWidth = plt.axes([left,controlH+4*dist,0.1,0.04])
 tDetectorWidth = TextBox(axDetectorWidth,'Detector Width ',initial='1')
 
-axNoiseSTD = plt.axes([left+0.3,controlH+0.15,0.1,0.04])
+axNoiseSTD = plt.axes([left+0.3,controlH+4*dist,0.1,0.04])
 tNoiseSTD = TextBox(axNoiseSTD,'Noise STD ',initial='0.01')
 
-axNoiseAmplitude = plt.axes([left+0.6,controlH+0.15,0.1,0.04])
-tNoiseAmplitude = TextBox(axNoiseAmplitude,'Noise Amplitude ',initial='1')
+axNoiseAmplitude = plt.axes([left+0.6,controlH+4*dist,0.1,0.04])
+tNoiseAmplitude = TextBox(axNoiseAmplitude,'Noise Amplitude ',initial='0')
 
 
 # Function to shoot the rays
@@ -130,7 +132,8 @@ def update(val=-1):
 
     # Create and shoot new rays
     global rays
-    rays = createRays(Nrays=int(sNumber.val),RayEnergyRange=[sEnergy.val]*2,rand=radio.value_selected=='random')
+    rays = createRays(Nrays=int(sNumber.val),RayEnergyRange=[sEnergy.val]*2,rand=radio.value_selected=='random',\
+        RayGenerationRange=[-sBandwidth.val/2,sBandwidth.val/2])
     shootRays(rays,lenses,VERBOSE=VERBOSE)
 
     # Plot lenses
