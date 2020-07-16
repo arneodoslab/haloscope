@@ -37,12 +37,36 @@ def minAngle(a,b):
 
 
 class Arc:
-    def __init__(self, C:np.array = np.array([0,0]),R:float = 1,theta:float = 2*np.pi, phi:float = 0, dirPositive:bool = False):
-        self.C = C
-        self.R = R
-        self.theta = theta
-        self.phi = phi
-        self.dirPositive = dirPositive
+    def __init__(self, C:np.array = np.array([0,0]),R:float = 1,theta:float = 2*np.pi, phi:float = 0, dirPositive:bool = False,pointX:np.array = None,pointY:np.array = None):
+        
+        if type(pointX) == type(None) or type(pointY) == type(None):
+            self.C = C
+            self.R = R
+            self.theta = theta
+            self.phi = phi
+            self.dirPositive = dirPositive
+
+        else:
+            # Find the center and radius of the arc, and decide its direction
+            p = 1/2*(pointX + pointY)
+            v = pointY - pointX
+            v[0] = v[1]
+            v[1] = -(pointY-pointX)[0]
+            v = v/mag(v)
+            l = - p[1]/v[1]
+            self.C = p+v*l
+            self.R = mag(self.C - pointX)
+            self.theta = arg(pointY-self.C)
+            self.dirPositive = (pointX-self.C).dot(np.array([1,0])) >= 0
+            if not self.dirPositive:
+                self.phi = self.theta/2
+                self.theta = 2*np.pi - self.theta
+            else:
+                self.phi = 2*np.pi - self.theta/2
+            
+            print('Center: ',self.C,'\nRadius: ',self.R,'\nv: ',v,'\nl: ',l,'\nlv: ',l*v,'\np: ',p)
+
+            
 
     def draw(self,ax,color='k',Npts=100,label='Lens'):
         angles = np.linspace(self.phi,self.phi+self.theta,Npts)

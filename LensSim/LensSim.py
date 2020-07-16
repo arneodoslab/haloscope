@@ -26,7 +26,7 @@ arc2 = Arc(C=np.array([-15,0]),R=14,dirPositive=True)
 lens = Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude)
 
 # Create lens 2
-arc3 = Arc(C=np.array([1,0]),R=1,dirPositive=False)
+arc3 = Arc(pointX=np.array([2,0]),pointY=np.array([1,1]))
 arc4 = Arc(C=np.array([2,0]),R=1.5,dirPositive=False)
 lens2 = Lens(arc3,arc4, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude)
 
