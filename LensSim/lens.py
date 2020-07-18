@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import scipy.constants as c
 import pandas as pd
 
-def mag(a):
+def mag(a:np.array):
     return a.dot(a)**0.5
 
 def arg(a):
@@ -63,8 +63,6 @@ class Arc:
                 self.theta = 2*np.pi - self.theta
             else:
                 self.phi = 2*np.pi - self.theta/2
-            
-            print('Center: ',self.C,'\nRadius: ',self.R,'\nv: ',v,'\nl: ',l,'\nlv: ',l*v,'\np: ',p)
 
             
 

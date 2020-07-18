@@ -3,7 +3,7 @@ from lens import *
 
 class Ray:
 
-    def __init__(self, start:np.array = np.array([-2,1]), direction:np.array = np.array([1,0]), energy:float = 2.0, stoppingDistance:float = 6):
+    def __init__(self, start:np.array = np.array([-2,1]), direction:np.array = np.array([1,0]), energy:float = 2.0, stoppingDistance:float = 100):
         self.points = np.array([start])
         self.direction = np.array([direction/mag(direction)])
         self.energy = energy
