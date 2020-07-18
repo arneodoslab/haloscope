@@ -10,7 +10,7 @@ from detector import *
 ## INITIALISATION PARAMETERS ############################################################
 
 # Simulation Parameters
-Nrays = 500
+Nrays = 1000
 rayEnergy = 1.5
 rayBandwidth = 5.08
 RayEnergyRange = [0.2,5.9] # eV
@@ -18,7 +18,7 @@ RayGenerationRange = [-2.54,2.54]
 RayGenerationXPos = -4
 
 detectorPos = 0
-detectorWidth = 0.1
+detectorWidth = 0.05
 Bandwidth = 0.1
 startPos = np.array([2,0])
 endPos = np.array([50,0])
@@ -73,7 +73,7 @@ def shootRays(rays,lenses,VERBOSE=VERBOSE):
         ray.shootThroughLenses(lenses)
 
 # Function to create a lens and update it as planned
-def generateLens(lensRightPoint:float,lensLeftPoint:float,lensCommonPoint:np.array = lensCommonPoint):
+def generateLens(lensRightPoint:float,lensLeftPoint:float,lensCommonPoint:np.array = lensCommonPoint,edgeThickness = edgeThickness):
     lensRightPoint = np.array([lensRightPoint,0])
     lensLeftPoint = np.array([lensLeftPoint,0])
     lensCommonPoint = lensCommonPoint
