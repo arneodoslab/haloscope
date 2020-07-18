@@ -84,7 +84,7 @@ class Arc:
 
 class Lens:
 
-    def __init__(self, arc1:Arc,arc2:Arc,rotate=0,refractiveIndexFilename = 'SiO2.csv', noiseAmplitude:float = 0, noiseStd:float = 0):
+    def __init__(self, arc1:Arc,arc2:Arc,rotate=0,refractiveIndexFilename = 'NBK7.csv', noiseAmplitude:float = 0, noiseStd:float = 0):
         self.arc1 = arc1
         self.arc2 = arc2
         self.noiseAmplitude = noiseAmplitude
