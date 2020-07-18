@@ -32,6 +32,7 @@ lensCommonPoint = np.array([0,2.54])
 
 theta0 = [2.54,-2.54]
 bounds = [(0.001,2.55),(-2.55,-0.001)]
+Ncores = 16
 
 VERBOSE = False
 
@@ -122,6 +123,6 @@ def handler(theta):
 if __name__=='__main__':
     # solution = optimize.minimize(handler, theta0, method = 'L-BFGS-B', bounds=bounds)
     # solution = optimize.shgo(handler,bounds, n=200, iters=5, sampling_method='sobol')
-    solution = optimize.differential_evolution(handler,bounds,updating='deferred',workers=3)
+    solution = optimize.differential_evolution(handler,bounds, updating='deferred',workers=Ncores)
 
     print(solution)
