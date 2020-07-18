@@ -24,11 +24,13 @@ Bandwidth = 0.1
 noiseStd = 0.01
 noiseAmplitude = 0
 
-lensRightPoint = np.array([0.4316416,0])
-lensLeftPoint = np.array([-0.66065332,0])
+# lensRightPoint = np.array([0.4316416,0])
+# lensLeftPoint = np.array([-0.66065332,0])
+lensRightPoint = np.array([0.15669758,0])
+lensLeftPoint = np.array([-0.24082897,0])
 lensCommonPoint = np.array([0,2.54])
 
-rayXlim = [-5,10]
+rayXlim = [-4,20]
 rayYlim = [-2.54,2.54]
 
 
