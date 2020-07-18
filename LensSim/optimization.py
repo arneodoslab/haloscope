@@ -29,6 +29,7 @@ noiseAmplitude = 0
 lensRightPoint = np.array([2.54,0])
 lensLeftPoint = np.array([-2.54,0])
 lensCommonPoint = np.array([0,2.54])
+edgeThickness = 0.18
 
 theta0 = [2.54,-2.54]
 bounds = [(0.001,2.55),(-2.55,-0.001)]
@@ -79,7 +80,7 @@ def generateLens(lensRightPoint:float,lensLeftPoint:float,lensCommonPoint:np.arr
 
     arc1 = Arc(pointX=lensRightPoint,pointY=lensCommonPoint)
     arc2 = Arc(pointX=lensLeftPoint,pointY=lensCommonPoint)
-    return Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude)
+    return Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude,thickness=edgeThickness)
 
 
 ## OPTIMISATION SCRIPT #################################################################

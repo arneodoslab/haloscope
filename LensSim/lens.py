@@ -84,15 +84,25 @@ class Arc:
 
 class Lens:
 
-    def __init__(self, arc1:Arc,arc2:Arc,rotate=0,refractiveIndexFilename = 'NBK7.csv', noiseAmplitude:float = 0, noiseStd:float = 0):
+    def __init__(self, arc1:Arc,arc2:Arc,rotate=0,refractiveIndexFilename = 'NBK7.csv', noiseAmplitude:float = 0, noiseStd:float = 0, thickness:float = 0):
         self.arc1 = arc1
         self.arc2 = arc2
+        self.arcs = [self.arc1,self.arc2]
         self.noiseAmplitude = noiseAmplitude
         self.noiseStd = noiseStd
         self.refractiveIndexData = pd.read_csv(refractiveIndexFilename,skiprows=1).values.T
         self.calculateIntersectionAngles()
+        self.addThickness(thickness)
+        self.thickness = thickness
+        
         # self.rotate(0)
 
+    def addThickness(self,thickness):
+        for arc in self.arcs:
+            i = np.array([1,0])
+            if not arc.dirPositive: i = -1*i
+
+            arc.C += i*thickness
 
     # Returns the angles that the two arcs intersect
     def calculateIntersectionAngles(self):

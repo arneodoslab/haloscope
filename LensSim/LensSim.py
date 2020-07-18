@@ -26,12 +26,12 @@ noiseAmplitude = 0
 
 # lensRightPoint = np.array([0.4316416,0])
 # lensLeftPoint = np.array([-0.66065332,0])
-lensRightPoint = np.array([0.15669758,0])
-lensLeftPoint = np.array([-0.24082897,0])
+lensRightPoint = np.array([0.1578881,0])
+lensLeftPoint = np.array([-0.43856842,0])
 lensCommonPoint = np.array([0,2.54])
 
 rayXlim = [-4,20]
-rayYlim = [-2.54,2.54]
+rayYlim = [-3,3]
 
 
 VERBOSE = False
@@ -40,7 +40,7 @@ VERBOSE = False
 # Create lens 1
 arc1 = Arc(pointX=lensRightPoint,pointY=lensCommonPoint)
 arc2 = Arc(pointX=lensLeftPoint,pointY=lensCommonPoint)
-lens = Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude)
+lens = Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude, thickness=0.18)
 
 # # Create lens 2
 # arc3 = Arc(pointX=np.array([2,0]),pointY=np.array([1,1]))
