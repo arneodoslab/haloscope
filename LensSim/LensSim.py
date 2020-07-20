@@ -18,23 +18,43 @@ RayGenerationRange = [-2.54,2.54]
 RayGenerationXPos = -4
 
 detectorPos = 2
-detectorWidth = 0.1
+detectorWidth = 0.05
 Bandwidth = 0.1
 
 noiseStd = 0.01
 noiseAmplitude = 0
 
-# lensRightPoint = np.array([0.4316416,0])
-# lensLeftPoint = np.array([-0.66065332,0])
-# lensRightPoint = np.array([0.1578881,0])
-# lensLeftPoint = np.array([-0.43856842,0])
-lensRightPoint = np.array([0.24315284,0])
-lensLeftPoint = np.array([-0.09266229,0])
-lensCommonPoint = np.array([0,2.54])
-edgeThickness = 0.18
+lensRightPoint = np.array([0.001,0])
+lensLeftPoint = np.array([-2,0]) #Thickness 0
 
-rayXlim = [-4,20]
-rayYlim = [-3,3]
+# lensRightPoint = np.array([0.4316416,0])  #From 2 to 20
+# lensLeftPoint = np.array([-0.66065332,0]) #Thickness 0
+
+# lensRightPoint = np.array([0.1578881,0])  #From 2 to 20
+# lensLeftPoint = np.array([-0.43856842,0]) #Thickness 0
+
+# lensRightPoint = np.array([0.24315284,0]) #From 2 to 50
+# lensLeftPoint = np.array([-0.09266229,0]) #Thickness 0.18
+
+# lensRightPoint = np.array([0.02806994,0]) #From 2 to 50
+# lensLeftPoint = np.array([-0.29361477,0]) #Thickness 0.18
+
+# lensRightPoint = np.array([0.12054916,0]) #From 2 to 50
+# lensLeftPoint = np.array([-0.12780141,0]) #Thickness 0.3
+
+# lensRightPoint = np.array([0.0707879,0])  #From 2 to 50
+# lensLeftPoint = np.array([-0.13389945,0]) #Thickness 0.3
+
+# lensRightPoint = np.array([0.09579702,0]) #From 10 ro 20
+# lensLeftPoint = np.array([-0.22188508,0]) #Thickness 0.3
+
+lensRightPoint = np.array([0.07842648,0]) #From 5 to 10
+lensLeftPoint = np.array([-0.54216092,0]) #Thickness 0.3 
+lensCommonPoint = np.array([0,2.54])
+edgeThickness = 0.3
+
+rayXlim = [-4,15]
+rayYlim = [-4,4]
 
 
 VERBOSE = False
@@ -44,6 +64,7 @@ VERBOSE = False
 arc1 = Arc(pointX=lensRightPoint,pointY=lensCommonPoint)
 arc2 = Arc(pointX=lensLeftPoint,pointY=lensCommonPoint)
 lens = Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude, thickness=edgeThickness)
+print("RADIUS 1: ",lens.arc1.R,"\nRADIUS 2: ",lens.arc2.R,"\nMAX THICKNESS: ",lens.arc1.R+lens.arc2.R+lens.thickness)
 
 # # Create lens 2
 # arc3 = Arc(pointX=np.array([2,0]),pointY=np.array([1,1]))
@@ -93,7 +114,7 @@ axEnergy = plt.axes([left, controlH+2*dist, 0.5, height])
 sEnergy = Slider(axEnergy, 'Energy of Rays', *RayEnergyRange, valinit=rayEnergy, valstep=0.01, color=color)
 
 axDetector = plt.axes([left,controlH+3*dist,0.5,height])
-sDetector = Slider(axDetector, 'Detector Pos', *xlim, valinit=detectorPos, valstep=0.01, color=color)
+sDetector = Slider(axDetector, 'Detector Pos', *rayXlim, valinit=detectorPos, valstep=0.01, color=color)
 
 # Add Buttons
 axShoot = plt.axes([right, controlH, 0.1, height])

@@ -10,7 +10,7 @@ from detector import *
 ## INITIALISATION PARAMETERS ############################################################
 
 # Simulation Parameters
-Nrays = 1000
+Nrays = 500
 rayEnergy = 1.5
 rayBandwidth = 5.08
 RayEnergyRange = [0.2,5.9] # eV
@@ -20,8 +20,8 @@ RayGenerationXPos = -4
 detectorPos = 0
 detectorWidth = 0.05
 Bandwidth = 0.1
-startPos = np.array([2,0])
-endPos = np.array([50,0])
+startPos = np.array([5,0])
+endPos = np.array([10,0])
 
 noiseStd = 0.01
 noiseAmplitude = 0
@@ -29,11 +29,11 @@ noiseAmplitude = 0
 lensRightPoint = np.array([2.54,0])
 lensLeftPoint = np.array([-2.54,0])
 lensCommonPoint = np.array([0,2.54])
-edgeThickness = 0.18
+edgeThickness = 0.3
 
 theta0 = [2.54,-2.54]
 bounds = [(0.001,2.55),(-2.55,-0.001)]
-Ncores = 16
+Ncores = 4
 
 VERBOSE = False
 
