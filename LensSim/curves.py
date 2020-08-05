@@ -56,7 +56,6 @@ def solve_linear(e):
 
 
 class Arc:
-    # def __init__(self, C:np.array = np.array([0,0]),R:float = 1,theta:float = 2*np.pi, phi:float = 0, dirPositive:bool = False,pointX:np.array = None,pointY:np.array = None):
     def __init__(self,pointX:np.array,pointY:np.array):
         
         # Find the center and radius of the arc, and decide its direction
@@ -66,22 +65,24 @@ class Arc:
         v[1] = -(pointY-pointX)[0]
         v = v/mag(v)
         l = - p[1]/v[1]
+
         self.C = p+v*l
         self.R = mag(self.C - pointX)
         self.theta = arg(pointY-self.C)
-        self.dirPositive = (pointX-self.C).dot(np.array([1,0])) >= 0
-        if not self.dirPositive:
+
+        dirPositive = (pointX-self.C).dot(np.array([1,0])) >= 0
+        if not dirPositive:
             self.phi = self.theta/2
             self.theta = 2*np.pi - self.theta
         else:
             self.phi = 2*np.pi - self.theta/2
 
     # Returns the tangent vector to the arc at an angle t
-    def That(self,t):
+    def t_hat(self,t):
         return np.array([-np.sin(self.phi + t),np.cos(self.phi + t)])
     
     # returns the normal vector to the arc at an angle t
-    def Nhat(self,t):
+    def n_hat(self,t):
         return - np.array([np.cos(self.phi + t),np.sin(self.phi + t)])
     
     # Returns a vector to a point at an angle t of the curve
@@ -90,18 +91,54 @@ class Arc:
         return self.C +self.R*np.array([np.cos(t),np.sin(t)])
 
     # Finds all the intersection points and retuns the shortest one
-    def getIntersection(self,p:np.array, k:np.array ,Nroots=10, decimals = 8):
-        solns = np.unique(fsolve(self.f,np.linspace(self.phi,self.phi+self.theta,Nroots),args=(p,k)).round(decimals))
-        
-        m = solns[0]
-        for s in solns:
-            if mag(self.r(s)-p) < mag(self.r(m)-p):
-                m = s
+    def get_intersection(self,p:np.array, k:np.array, VERBOSE:bool = False):
+        # First calculate the minimum distance d between the center of the arc and the ray
+        d = mag(self.C-p-(self.C-p).dot(k)*k)
 
-        if (self.r(m) - p).dot(k) - mag(self.r(s)-p) > 10**(-decimals):
-            return p, float('inf')
+        if VERBOSE: print('d: ',d)
+
+        # Initialise return variables
+        l_min = float('inf')
+        t_min = -1
+
+        # Then check if the ray intersects with circle
+        if d < self.R: # In this case there are two solutions:
+            a = (mag(self.C-p)**2-d**2)**0.5
+            b = (self.R**2-d**2)**0.5
+
+            point1 = (a+b)*k + p        # Solution 1
+            point2 = (a-b)*k + p        # Solution 2
+            solns = np.array([point for point in [point1,point2] if self.point_in_arc(point)]) # Add them to solns iff they belong to the arc
+            if VERBOSE: print("solns: ",solns)
+            # Get the smalles solution
+            for soln in solns:
+                if mag(p-soln) < l_min and (soln-p).dot(k) >= 0:
+                    l_min = mag(p-soln)
+                    t_min = arg(soln)
         
-        return self.r(m), m
+        elif d == self.R: # If it's right on top of the arc, 1 soln
+            point = p + k * (self.C-p).dot(k)
+            if self.point_in_arc(point): # if it is in the arc
+                if mag(p-point) < l_min and (point-p).dot(k) >= 0: # if it is less than before update
+                    l_min = mag(p-point)
+                    t_min = arg(point)
+        
+        if VERBOSE: print("final: ",l_min,t_min)
+        return l_min, t_min
+                
+    
+    # Checks if the vector is on the arc
+    def point_in_arc(self,p:np.array,from_center:bool=False):
+        p = p - self.C if not from_center else p # if the vector does not start from the cicle center, make it so
+
+        # get the argument of p, that belongs in [0,2π]
+        theta = arg(p)
+
+        # if argument is within the thingy return true
+        theta_prime = theta - self.phi if theta - self.phi >=0 else 2*np.pi + theta - self.phi
+
+        return theta_prime <= self.theta and (mag(p) - self.R) < 1e-8
+        
 
     # Draws the arc on a predefined ax object
     def draw(self,ax,color='k',Npts=100,label='Lens'):

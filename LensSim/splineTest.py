@@ -9,9 +9,11 @@ Y = np.array([0,0.2,0.5])
 
 s = Spline(X,Y,phi=3)
 
+arc = Arc(np.array([1,0]),np.array([0,2]))
+
 # Create a bunch of rays emanating from a point
 p = np.array([1.5,1])
-Nrays = 100
+Nrays = 200
 theta_min = -np.pi
 theta_max = 0
 rays = []
