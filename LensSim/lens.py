@@ -11,13 +11,14 @@ from curves import *
 # This class represents a lens
 class Lens:
 
-    def __init__(self,curves,refractiveIndexFilename = 'NBK7.csv', noiseAmplitude:float = 0, noiseStd:float = 0, thickness:float = 0):
-        self.curves = curves
-        self.noiseAmplitude = noiseAmplitude
-        self.noiseStd = noiseStd
-        self.refractiveIndexData = pd.read_csv(refractiveIndexFilename,skiprows=1).values.T
-        self.addThickness(thickness)
-        self.thickness = thickness
+    # Constructor
+    def __init__(self,curves,refractive_index_filename = 'NBK7.csv', noise_amplitude:float = 0, noise_std:float = 0, thickness:float = 0):
+        self.curves = curves                    # The curves that constitute the lens
+        self.noise_amplitude = noise_amplitude    # The amplitude of the perlin noise added to the surface
+        self.noise_std = noise_std                # The std of the perlin noise added to the surface
+        self.refractive_index_data = pd.read_csv(refractive_index_filename,skiprows=1).values.T     # Reads CSV file with the refractive index data and saves it there
+        self.add_thickness(thickness)            # Function to add the requested thickness for the lens
+        self.thickness = thickness              # The thickness of the lens
 
     # Draws the lens in an ax object
     def draw(self, ax = None, Npts = 100, figsize = (5,5), dpi = 200):
@@ -32,10 +33,10 @@ class Lens:
 
 
     # Returns the reftactive index at a particular wavelength
-    def getRefractiveIndex(self,energy):
-        return np.interp(energy,self.refractiveIndexData[0],self.refractiveIndexData[1])
+    def get_refractive_index(self,energy):
+        return np.interp(energy,self.refractive_index_data[0],self.refractive_index_data[1])
 
     # Moves the center position of each of the two curves so that they are thickness apart
-    def addThickness(self,thickness):
+    def add_thickness(self,thickness):
         self.curves[0].position = np.array([-thickness/2,0])
         self.curves[1].position = np.array([ thickness/2,0])
