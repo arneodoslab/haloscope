@@ -7,6 +7,7 @@ from tqdm import tqdm
 from lens import *
 from ray import *
 from detector import *
+from curves import *
 
 
 # Simulation Parameters
@@ -63,8 +64,9 @@ VERBOSE = False
 # Create lens 1
 arc1 = Arc(pointX=lensRightPoint,pointY=lensCommonPoint)
 arc2 = Arc(pointX=lensLeftPoint,pointY=lensCommonPoint)
-lens = Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude, thickness=edgeThickness)
-print("RADIUS 1: ",lens.arc1.R,"\nRADIUS 2: ",lens.arc2.R,"\nMAX THICKNESS: ",lens.arc1.R+lens.arc2.R+lens.thickness)
+spline2 = Spline([0,0.25,0.5],[0,0.3,0.5],scale=5.08)
+lens = Lens([arc1,spline2], noiseStd=noiseStd, noiseAmplitude=noiseAmplitude, thickness=edgeThickness)
+# print("RADIUS 1: ",lens.arc1.R,"\nRADIUS 2: ",lens.arc2.R,"\nMAX THICKNESS: ",lens.arc1.R+lens.arc2.R+lens.thickness)
 
 # # Create lens 2
 # arc3 = Arc(pointX=np.array([2,0]),pointY=np.array([1,1]))
