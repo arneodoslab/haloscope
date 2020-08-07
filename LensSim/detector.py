@@ -7,15 +7,16 @@ from ray import *
 from lens import *
 
 class Detector:
-    
+    # Constructor
     def __init__ (self, position:np.array=np.array([1.0,0.0]), height:float = 1):
         self.position = position
         self.height = height
-        self.mesh = self.generateLineMesh()
+        self.mesh = self.generate_line_mesh()
         self.hits = []
         self.count = 0
 
-    def generateLineMesh(self):
+    # Generates the mesh of the detector
+    def generate_line_mesh(self):
         mesh = []
         mesh.append(self.position+np.array([0,self.height/2]))
         mesh.append(self.position+np.array([0,-self.height/2]))
@@ -25,7 +26,7 @@ class Detector:
         return self.mesh
 
     # Function that given an array of rays counts how many of the hit the detector
-    def countHits(self,rays):
+    def count_hits(self,rays):
         count = 0
         hits = []
         avg = 0
@@ -35,7 +36,7 @@ class Detector:
                 rY = ray.points.T[1]
                 yest = np.interp(point[0],rX,rY)
                 avg += abs(yest)
-                if self.belongInMesh(np.array([point[0],yest])):
+                if self.belong_in_mesh(np.array([point[0],yest])):
                     count+=1
                     hits.append([point[0],yest])
                     break
@@ -43,19 +44,19 @@ class Detector:
         self.count = count
         self.hits = np.array(hits)
         self.rate = count/len(rays)
-        self.beamWidth = avg*2/len(rays)
+        self.beam_width = avg*2/len(rays)
 
-        return self.count, self.rate, self.hits, self.beamWidth
+        return self.count, self.rate, self.hits, self.beam_width
 
-    def belongInMesh(self,p):
+    def belong_in_mesh(self,p):
         return p[1]<max(self.mesh.T[1]) and p[1]>min(self.mesh.T[1])
 
-    def setPosition(self,position:np.array):
+    def set_position(self,position:np.array):
         self.position = position
-        self.mesh = self.generateLineMesh()
+        self.mesh = self.generate_line_mesh()
 
     # This function creates and stores an array of data with the efficiency at each poiint of the detectector in a sweep
-    def sweepPath(self,rays,startPos:np.array = np.array([0,0]),endPos:np.array=np.array([4,0]),Nsteps = 100, VERBOSE:bool=True):
+    def sweep_path(self,rays,startPos:np.array = np.array([0,0]),endPos:np.array=np.array([4,0]),Nsteps = 100, VERBOSE:bool=True):
         direction = (endPos-startPos)
         steps = np.linspace(0,1,Nsteps)
 
@@ -65,10 +66,10 @@ class Detector:
             print("Sweeping from: [%.2f,%.2f]"%(startPos[0],startPos[1])," to: [%.2f,%.2f]"%(endPos[0],endPos[1]))
             steps = tqdm(steps)
         for step in steps:
-            self.setPosition(startPos+step*direction)
-            countResults = self.countHits(rays)
-            rates.append([countResults[1],self.position])
-            widths.append([countResults[3],self.position])
+            self.set_position(startPos+step*direction)
+            count_results = self.count_hits(rays)
+            rates.append([count_results[1],self.position])
+            widths.append([count_results[3],self.position])
         
         self.rates = np.array(rates)
         self.widths = np.array(widths)
@@ -76,13 +77,13 @@ class Detector:
         return self.rates, self.widths
 
 
-    def densityPlot(self,ax=None,Npts = 500, figsize = (7,7), dpi = 100, color = 'k', lw = 1, title="Detector Density Plot",bandwidth=0.5):
+    def density_plot(self,ax=None,Npts = 500, figsize = (7,7), dpi = 100, color = 'k', lw = 1, title="Detector Density Plot",bandwidth=0.5):
         if ax==None:
             fig = plt.figure(figsize=figsize,dpi=dpi)
             ax  = fig.add_subplot(111)
 
         ax.set_title(title)
-
+        # return 
         data = self.hits.T[1]
         # print(data)
         kde = scipy.stats.gaussian_kde(data,bw_method=bandwidth)
@@ -99,11 +100,11 @@ class Detector:
         ax.legend()
         ax.grid()
 
-    def sweepPlot(self,rays,startPos:np.array = np.array([0,0]),endPos:np.array=np.array([4,0]),Nsteps = 100,\
+    def sweep_plot(self,rays,startPos:np.array = np.array([0,0]),endPos:np.array=np.array([4,0]),Nsteps = 100,\
         ax=None,Npts = 500, figsize = (7,7), dpi = 100, color = 'k', lw = 1, title="Detector Sweep Plot"):
 
         # Get the sweep parameters
-        rates, widths = self.sweepPath(rays,startPos=startPos,endPos=endPos,Nsteps = Nsteps)
+        rates, widths = self.sweep_path(rays,startPos=startPos,endPos=endPos,Nsteps = Nsteps)
 
         # Split them up
         rate = rates.T[0]
@@ -149,6 +150,6 @@ class Detector:
         ax.grid(True)
         ax.legend(loc='center right', bbox_to_anchor=(0.5, -0.2))
 
-
+    # Draws the detector in a specified ax object
     def draw(self,ax,color='k',lw=3):
         ax.plot(self.mesh.T[0],self.mesh.T[1],c=color,lw=lw)

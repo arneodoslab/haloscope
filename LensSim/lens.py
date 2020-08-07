@@ -38,5 +38,6 @@ class Lens:
 
     # Moves the center position of each of the two curves so that they are thickness apart
     def add_thickness(self,thickness):
-        self.curves[0].position = np.array([-thickness/2,0])
-        self.curves[1].position = np.array([ thickness/2,0])
+        return
+        # self.curves[0].position += np.array([-thickness/2,0.])
+        # self.curves[1].position += np.array([ thickness/2,0.])

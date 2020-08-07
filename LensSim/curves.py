@@ -7,27 +7,48 @@ import scipy.linalg as la
 from scipy.optimize import fsolve
 from collections.abc import Iterable
 
+# Return the magnitude of a vector a
 def mag(a:np.array):
     return a.dot(a)**0.5
 
-def arg(a):
-    if a[0] == 0:
-        if a[1]>0:
-            return np.pi/2
-        else:
-            return 3/2*np.pi
+# Returns the unit vector from a
+def hat(a:np.array):
+    return a/mag(a)
 
-    elif a[0]>0:
-        if a[1]>0:
-            return np.arctan(a[1]/a[0])
-        else:
-            return np.arctan(a[1]/a[0])+2*np.pi
+# Return the argument of curve from 0 to  2π
+def arg(a:np.array):
+    return np.arccos(hat(a)[0]) if hat(a)[1] >= 0 else (np.pi + np.arccos(hat(a)[0]))
 
-    else:
-        return np.arctan(a[1]/a[0])+np.pi
+# Returns the angle between two position angles
+def delta_theta(theta_1,theta_2):
+    theta = theta_1 - theta_2
+    return theta if theta >= 0 else 2*np.pi - theta
 
-def random(m,M):
+# Return a random float between m and M
+def random(m:float,M:float):
     return np.random.rand()*(M-m) + m
+
+# Return the cross product with k_hat of a 2D vector a
+def cross_k(a):
+    return np.array([-a[1],a[0]])
+
+# returns the inverse of a 2x2 matrix M
+def inverse(M:np.array):
+    M_inverse = np.zeros(M.shape)
+    M_inverse[0][0] = M[1][1]
+    M_inverse[1][1] = M[0][0]
+    M_inverse[1][0] = - M[1][0]
+    M_inverse[0][1] = - M[0][1]
+
+    M_inverse/= M[0][0]*M[1][1]-M[1][0]*M[0][1]
+
+    return M_inverse
+
+# Return swapped variables a & b
+def swap(a):
+    temp = a[0]
+    a[0] = a[1]
+    a[1] = temp
 
 # This function returns the solutions of a cubic polynomial, both real and imaginary
 def solve_cubic(e:Iterable):
@@ -56,39 +77,55 @@ def solve_linear(e):
 
 
 class Arc:
-    def __init__(self,pointX:np.array,pointY:np.array):
+    def __init__(self,point_1:np.array,point_2:np.array,point_3:np.array,position:np.array = np.array([0,0])):
         
+        # Calculate the center and radius based on the points
+        self.C, self.R = self.calculate_center_radius(point_1,point_2,point_3)
+        
+        # Calculate the start and end angles
+        self.theta_1 = arg(point_1 - self.C)
+        self.theta_2 = arg(point_3 - self.C)
+        self.rate    = delta_theta(self.theta_1,self.theta_2)*np.sign(cross_k(point_1-point_2).dot(point_2-self.C))
+
+
+    # Returns the center and radius of the circle described by the three points
+    def calculate_center_radius(self,point_1,point_2,point_3):
         # Find the center and radius of the arc, and decide its direction
-        p = 1/2*(pointX + pointY)
-        v = pointY - pointX
-        v[0] = v[1]
-        v[1] = -(pointY-pointX)[0]
-        v = v/mag(v)
-        l = - p[1]/v[1]
+        direction_1 = hat(cross_k(point_2-point_1))
+        direction_2 = hat(cross_k(point_3-point_2))
+        M = np.append(direction_1,direction_2).reshape((2,2)).T
+        M_inverse = inverse(M)
 
-        self.C = p+v*l
-        self.R = mag(self.C - pointX)
-        self.theta = arg(pointY-self.C)
+        translation = np.matmul(M_inverse,0.5*(-point_1+point_3))[0] # Get translation constant
 
-        dirPositive = (pointX-self.C).dot(np.array([1,0])) >= 0
-        if not dirPositive:
-            self.phi = self.theta/2
-            self.theta = 2*np.pi - self.theta
-        else:
-            self.phi = 2*np.pi - self.theta/2
+        # Calculate center and radius
+        C = direction_1*translation + 0.5*(point_1+point_2)
+        R = mag(point_1-C)
 
-    # Returns the tangent vector to the arc at an angle t
+        # breakpoint()
+        return C,R
+
+    # returns the parameter form the angle
+    def t(self,theta):
+        return delta_theta(self.theta_1,theta)/self.rate
+
+    # Returns the tangent vector to the arc at t
     def t_hat(self,t):
-        return np.array([-np.sin(self.phi + t),np.cos(self.phi + t)])
+        if isinstance(t,Iterable): return np.array([self.t_hat(i) for i in t]) # Return array of positions if you ask for it
+        
+        return np.array([-np.sin(self.theta_1 + self.rate*t),np.cos(self.theta_1 + self.rate*t)])
     
-    # returns the normal vector to the arc at an angle t
+    # returns the normal vector to the arc at t
     def n_hat(self,t):
-        return - np.array([np.cos(self.phi + t),np.sin(self.phi + t)])
+        if isinstance(t,Iterable): return np.array([self.n_hat(i) for i in t]) # Return array of positions if you ask for it
+        
+        return - np.array([np.cos(self.theta_1 + self.rate*t),np.sin(self.theta_1 + self.rate*t)])
     
     # Returns a vector to a point at an angle t of the curve
     def r(self,t):
         if isinstance(t,Iterable): return np.array([self.r(i) for i in t])
-        return self.C +self.R*np.array([np.cos(t),np.sin(t)])
+        
+        return self.C + self.R*np.array([np.cos(self.theta_1 + self.rate*t),np.sin(self.theta_1 + self.rate*t)])
 
     # Finds all the intersection points and retuns the shortest one
     def get_intersection(self,p:np.array, k:np.array, VERBOSE:bool = False):
@@ -114,14 +151,14 @@ class Arc:
             for soln in solns:
                 if mag(p-soln) < l_min and (soln-p).dot(k) >= 0:
                     l_min = mag(p-soln)
-                    t_min = arg(soln)
+                    t_min = self.t(arg(soln))
         
         elif d == self.R: # If it's right on top of the arc, 1 soln
             point = p + k * (self.C-p).dot(k)
             if self.point_in_arc(point): # if it is in the arc
                 if mag(p-point) < l_min and (point-p).dot(k) >= 0: # if it is less than before update
                     l_min = mag(p-point)
-                    t_min = arg(point)
+                    t_min = self.t(arg(point))
         
         if VERBOSE: print("final: ",l_min,t_min)
         return l_min, t_min
@@ -131,32 +168,23 @@ class Arc:
     def point_in_arc(self,p:np.array,from_center:bool=False):
         p = p - self.C if not from_center else p # if the vector does not start from the cicle center, make it so
 
-        # get the argument of p, that belongs in [0,2π]
-        theta = arg(p)
+        # get the curve length argument of p, that belongs in [0,2π]
+        t = self.t(arg(p))
 
-        # if argument is within the thingy return true
-        theta_prime = theta - self.phi if theta - self.phi >=0 else 2*np.pi + theta - self.phi
-
-        return theta_prime <= self.theta and (mag(p) - self.R) < 1e-8
-        
+        return t <= 1 and t >= 0 and (mag(p) - self.R) < 1e-8
+    
 
     # Draws the arc on a predefined ax object
     def draw(self,ax,color='k',Npts=100,label='Lens'):
-        angles = np.linspace(self.phi,self.phi+self.theta,Npts)
-        ptsX = self.R*np.cos(angles) + self.C[0]
-        ptsY = self.R*np.sin(angles) + self.C[1]
+        t = np.linspace(0,0.5,Npts)
+        pts = self.r(t)
 
-        ax.scatter(self.R*np.cos(angles[0])+self.C[0],self.R*np.sin(angles[0])+self.C[1])
-        
-        return ax.plot(ptsX,ptsY, c=color, label=label)
+        return ax.plot(pts.T[0],pts.T[1], c=color, label=label)
 
     # Prints the arc's parameters for debugging
     def print(self):
         print("Object of type arc.\n\n\tC = "+str(self.C)\
-            +"\n\tR = "+str(self.R)\
-            +"\n\tTheta = "+str(self.theta*180/np.pi)\
-            +"\n\tphi = "+str(self.phi*180/np.pi)\
-            +"\n\tdirPositive = "+str(self.dirPositive)+"\n")
+            +"\n\tR = "+str(self.R))
 
 
 
@@ -166,7 +194,7 @@ class Arc:
 class Spline:
 
     # Constructor
-    def __init__(self, X:np.array, Y:np.array, phi:float = 0, alpha = None, scale:float = 2, theta:float = np.pi/2, position:np.array = np.array([0,-1])):
+    def __init__(self, X:np.array, Y:np.array, phi:float = 0, alpha = None, scale:float = 2, theta:float = np.pi/2, position = np.array([0,-1])):
         self.X = X
         self.Y = Y
         self.phi = phi
@@ -176,6 +204,8 @@ class Spline:
         self.position = position
         self.n = len(X)
         self.a = self.solve_curvature()
+
+        # breakpoint()
 
     # Use tridiaognal backsubstitution to solve for the spline coefficients
     def solve_curvature(self):
@@ -261,19 +291,26 @@ class Spline:
         return y
 
     # Calculates the scalar first derivative at x
-    def yprime(self,x):
+    def y_prime(self,x):
+        # Adjust if x is halfway through then make it as if it isn't
+        if x>max(self.X):
+            x = 2*max(self.X)-x
+            a = -1
+        else: 
+            a = 1
+
         i = self.index(x)
-        yprime = -self.a[i]*(self.X[i+1]-x)**2/(2*self.h(i)) + self.a[i+1]*(x-self.X[i])**2/(2*self.h(i))\
+        y_prime = -self.a[i]*(self.X[i+1]-x)**2/(2*self.h(i)) + self.a[i+1]*(x-self.X[i])**2/(2*self.h(i))\
             + (self.Y[i+1]-self.Y[i])/self.h(i) - self.h(i)*(self.a[i+1]-self.a[i])/6
 
-        return yprime
+        return y_prime*a
 
     # Calculates the scalar second derivative at x
-    def ydoubleprime(self,x):
+    def y_double_prime(self,x):
         i = self.index(x)
-        ydoubleprime = self.a[i]*(self.X[i+1] - x)/self.h(i) + self.a[i+1]*(x-self.X[i])/self.h(i)
+        y_double_prime = self.a[i]*(self.X[i+1] - x)/self.h(i) + self.a[i+1]*(x-self.X[i])/self.h(i)
 
-        return ydoubleprime
+        return y_double_prime
 
     # Returns rotation matrix for a particular angle
     def R(self,theta):
@@ -288,35 +325,39 @@ class Spline:
     # returns a position vector for the spline point taking into account scaling and rotation
     def r(self,t):
         if isinstance(t,Iterable): return np.array([self.r(i) for i in t]) # Return array of positions if you ask for it
-
+        # breakpoint()
         r = np.array([t,self.y(t)]) #- np.array([(max(self.X)-min(self.X)),0])
         r = self.scale * np.matmul(self.R(self.theta),r) + self.position
 
         return r
     
     # Calculates the first derivative of the position vector r
-    def rprime(self,x):
-        rprime = np.array([1,self.yprime(x)])
-        rprime = self.scale * np.matmul(self.R(self.theta),rprime)
+    def r_prime(self,x):
+        r_prime = np.array([1,self.y_prime(x)])
+        r_prime = self.scale * np.matmul(self.R(self.theta),r_prime)
 
-        return rprime
+        return r_prime
 
     # Calculates the second derivative of the position vector r
-    def rdoubleprime(self,x):
-        rdoubleprime = np.array([0,self.ydoubleprime(x)])
-        rdoubleprime = self.scale * np.matmul(self.R(self.theta),rdoubleprime)
+    def r_double_prime(self,x):
+        r_double_prime = np.array([0,self.y_double_prime(x)])
+        r_double_prime = self.scale * np.matmul(self.R(self.theta),r_double_prime)
         
-        return rdoubleprime
+        return r_double_prime
 
     # Returns the tangent vector of the thingy
     def t_hat(self,t):
-        rprime = self.rprime(t)
-        return rprime/mag(rprime)
+        if isinstance(t,Iterable): return np.array([self.t_hat(i) for i in t]) # Return array of positions if you ask for it
+        
+        r_prime = self.r_prime(t)         # Get the veolocity and normalise it
+        return r_prime/mag(r_prime)
 
     # Returns the normal of the curve
     def n_hat(self,t):
-        rdoubleprime = self.rdoubleprime(t)
-        return rdoubleprime/mag(rdoubleprime)
+        if isinstance(t,Iterable): return np.array([self.n_hat(i) for i in t]) # Return array of positions if you ask for it
+        
+        t = self.t_hat(t)               # Get tortion and rotate it by π/2
+        return np.array([-t[1],t[0]])
 
    
 
@@ -421,3 +462,13 @@ class Spline:
         # ax.scatter(points.T[0],points.T[1],color=color,s=10)
         rs = np.array([self.r(xi) for xi in x])
         ax.plot(rs.T[0],rs.T[1],color=color)
+
+    def draw_frenet_frame(self,ax,color='darkgreen',Npts=15,label='Frenet Frame of spline'):
+        t = np.linspace(min(self.X),min(self.X)+2*(max(self.X)-min(self.X)),Npts)
+
+        rs = self.r(t)
+        ns = self.n_hat(t)
+        ts = self.t_hat(t)
+
+        ax.quiver(rs.T[0],rs.T[1],ns.T[0],ns.T[1],color='darkgreen',label='Frenet frame')
+        ax.quiver(rs.T[0],rs.T[1],ts.T[0],ts.T[1],color='darkred',label='Frenet frame')
