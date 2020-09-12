@@ -6,6 +6,7 @@ from tqdm import tqdm
 from lens import *
 from ray import *
 from detector import *
+from curves import *
 
 ## INITIALISATION PARAMETERS ############################################################
 
@@ -18,18 +19,23 @@ RayGenerationRange = [-2.54,2.54]
 RayGenerationXPos = -4
 
 detectorPos = 0
-detectorWidth = 0.05
+detectorWidth = 0.02
 Bandwidth = 0.1
 startPos = np.array([5,0])
 endPos = np.array([10,0])
 
-noiseStd = 0.01
-noiseAmplitude = 0
+noise_std = 0.01
+noise_amplitude = 0
 
-lensRightPoint = np.array([2.54,0])
-lensLeftPoint = np.array([-2.54,0])
-lensCommonPoint = np.array([0,2.54])
-edgeThickness = 0.3
+X_1 = np.array([0,0.25,0.5])
+Y_1 = np.array([0,0.25,0.5])
+phi_1 = 1
+
+X_2 = np.array([0,0.25,0.5])
+Y_2 = np.array([0,0.25,0.5])
+phi_2 = 2
+
+thickness = 0.3
 
 theta0 = [2.54,-2.54]
 bounds = [(0.001,2.55),(-2.55,-0.001)]
@@ -38,9 +44,9 @@ Ncores = 4
 VERBOSE = False
 
 # Create lens 1
-arc1 = Arc(pointX=lensRightPoint,pointY=lensCommonPoint)
-arc2 = Arc(pointX=lensLeftPoint,pointY=lensCommonPoint)
-lens1 = Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude)
+spline_1 = Spline(X_1,Y_1,phi_1,theta=-np.pi/2,scale=5.08,position=np.array([-thickness/2,0]))
+spline_2 = Spline(X_2,Y_2,phi_2,theta=np.pi/2,scale=5.08,position=np.array([thickness/2,0]))
+lens1 = Lens([spline_1,spline_2], noise_std=noise_std, noise_amplitude=noise_amplitude)
 
 # Create lens list
 lenses = [lens1]
@@ -73,14 +79,11 @@ def shootRays(rays,lenses,VERBOSE=VERBOSE):
         ray.shootThroughLenses(lenses)
 
 # Function to create a lens and update it as planned
-def generateLens(lensRightPoint:float,lensLeftPoint:float,lensCommonPoint:np.array = lensCommonPoint,edgeThickness = edgeThickness):
-    lensRightPoint = np.array([lensRightPoint,0])
-    lensLeftPoint = np.array([lensLeftPoint,0])
-    lensCommonPoint = lensCommonPoint
+def generateLens(X_1:np.array = X_1,Y_1:np.array = Y_1,phi_1:float=phi_1,X_2:np.array = X_2,Y_2:np.array = Y_2,phi_2:float = phi_2):
+    spline_1 = Spline(X_1,Y_1,phi_1,theta=-np.pi/2,scale=5.08,position=np.array([-thickness/2,0]))
+    spline_2 = Spline(X_2,Y_2,phi_2,theta=np.pi/2,scale=5.08,position=np.array([thickness/2,0]))
 
-    arc1 = Arc(pointX=lensRightPoint,pointY=lensCommonPoint)
-    arc2 = Arc(pointX=lensLeftPoint,pointY=lensCommonPoint)
-    return Lens(arc1,arc2, noiseStd=noiseStd, noiseAmplitude=noiseAmplitude,thickness=edgeThickness)
+    return Lens([spline_1,spline_2], noise_std=noise_std, noise_amplitude=noise_amplitude)
 
 
 ## OPTIMISATION SCRIPT #################################################################

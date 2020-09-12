@@ -2,113 +2,119 @@
 from lens import *
 
 class Ray:
-
-    def __init__(self, start:np.array = np.array([-2,1]), direction:np.array = np.array([1,0]), energy:float = 2.0, stoppingDistance:float = 100):
+    # Constructor
+    def __init__(self, start:np.array = np.array([-2,1]), direction:np.array = np.array([1,0]), energy:float = 2.0, stopping_distance:float = 100):
         self.points = np.array([start])
         self.direction = np.array([direction/mag(direction)])
         self.energy = energy
-        self.stoppingDistance = stoppingDistance
-        self.ncurrent = 1
+        self.stopping_distance = stopping_distance
+        self.n_current = 1
         self.VERBOSE = False
 
-    def shootThroughLens(self, lens, cnt = 0, cntThresh = 100, extendAtEnd = True):
-        arcs = lens.getArcs()
-        p = self.points[-1]
-        d = self.direction[-1]
-        if self.VERBOSE: print("Shootting Through Lens: ",cnt)
-        travelDist, toArc = self.distToClosestArc(arcs,p,d)
-        if self.VERBOSE: print("\tTravelDist = ",travelDist)
-        if self.VERBOSE: print("\tPoints: ",self.points)
+    # This is in charge of shooting the ray through a lens and calculating its path
+    def shoot_through_lens(self,lens:Lens, cnt:int = 0, cnt_max:int = 100, extend_at_end:bool = True, VERBOSE:bool = False):
+        p = self.points[-1]     # Get the current position of the ray
+        k = self.direction[-1]  # Get the current direction fo the ray
 
-        if travelDist == float("inf"):
-            if self.VERBOSE: print('\tFound Inf! Exiting')
-            if extendAtEnd: travelDist = self.stoppingDistance
-            else: travelDist = 0
-            if self.VERBOSE: print("\tExtend?: ",extendAtEnd)
-            if self.VERBOSE: print("\tFinal Dist = ",travelDist)
+        if VERBOSE: print("Shootting Through Lens: ",cnt)
+        # Find the closes intersection
+        l, t, curve = self.get_closest_intersection(lens,p,k)
 
-            self.points = np.append(self.points, [p+d*travelDist], axis=0)
-            if self.VERBOSE: print("Final Points: ",self.points)
-            if self.VERBOSE: print("Final Direcs: ",self.direction)
+        # Identify if you've passed the end of the lens
+        if t < 0:
+            travel_distance = self.stopping_distance if extend_at_end else 0
+            self.points = np.append(self.points, [p + k*travel_distance], axis=0) # Add an extra point further away
             return
-
-        if cnt > cntThresh:
-            return
-
-        # Move the ray
-        self.points = np.append(self.points,[p+d*travelDist],axis=0)
-        if self.VERBOSE: print("\tNew Point: ",p+d*travelDist)
-
-        self.refract(lens, d,toArc)
-
-        if self.VERBOSE: print()
-        self.shootThroughLens(lens,cnt=cnt+1,extendAtEnd=extendAtEnd)
         
-        return
+        # if it has bounced off a shit ton of times exit
+        if cnt >= cnt_max:
+            return
+        
+        # Move the ray to the new point
+        self.points = np.append(self.points,[p + k*l],axis=0)
 
-    def refract(self, lens, d, toArc):
+        # Refract the ray
+        self.refract(lens,curve,k,t)
+
+        # Recursively continue until the end
+        self.shoot_through_lens(lens,cnt=cnt+1,extend_at_end=extend_at_end,VERBOSE=VERBOSE)
+
+        return 
+
+
+    # loops through all the curves and finds the closes one in the path, as well as its intersection point
+    def get_closest_intersection(self,lens,p,k):
+        # Initialise return varibales
+        l_min = float('inf')
+        t_min = -1
+        curve_min = lens.curves[0]
+
+        # for all curves
+        for curve in lens.curves:
+            l,t = curve.get_intersection(p,k) # Get the distance to curve l and intersection point parameter t
+
+            # Update the minima if this is the case
+            if l < l_min and not t < 0 and l > 1e-8: 
+                l_min = l
+                t_min = t
+                curve_min = curve
+        
+        return l_min, t_min, curve_min
+
+
+    # Returns rotation matrix for a particular angle
+    def R(self,theta):
+        R = np.zeros([2,2])
+        R[0][0] = np.cos(theta)
+        R[0][1] = -np.sin(theta)
+        R[1][0] = np.sin(theta)
+        R[1][1] = np.cos(theta)
+
+        return R
+
+    # This function changes the direction of refraction based on the new thingy
+    def refract(self, lens:Lens, curve, k, t, VERBOSE:bool = False):
         # Refract Properly
-        n1 = self.ncurrent
-        n2 = self.renewRefractiveIndex(lens)
-        R = self.points[-1] - toArc.C
-        
-        theta1 = (np.arccos(abs(d.dot(toArc.C-self.points[-1]))/mag(self.points[-1]-toArc.C)))
-        if (n2<n1) and theta1 > np.arcsin(n2/n1): # Account for total internal reflection
-            self.direction = np.append(self.direction,[d-2*d.dot(R)/mag(R)**2*R],axis=0)
-            theta = 0
-            theta2 = 0
+        n1 = self.n_current
+        n2 = self.renew_refractive_index(lens)
 
+        N = curve.n_hat(t)                              # Get normal vector on the curve
+        theta = np.arccos(abs(k.dot(N)))                # Get minimum angle between the direction and normal
+
+        theta_critical = np.arcsin(n2/n1) if n1>=n2 else float('inf') # Define a pseudocritical angle
+
+        # Create noise as predefined by the lens
+        noise = np.random.normal(0,lens.noise_std)*lens.noise_amplitude
+
+        # Check for total internal reflection
+        if theta < theta_critical:
+            theta_prime = np.arcsin(n1/n2*np.sin(theta))*np.sign(N[0]*k[1]-N[1]*k[0])*np.sign(N.dot(k))
+            kprime = np.matmul(self.R(theta_prime + noise),N*np.sign(k.dot(N)))
         else:
-            t = (np.array([R[1],-R[0]]))
-            theta2 = (np.arcsin(n1/n2*np.sin(theta1)))
-            noise = np.random.normal(0,lens.noiseStd)*lens.noiseAmplitude
-            theta = arg(d) - (theta1 - theta2)*np.sign(d[0]*t[1]-d[1]*t[0])*np.sign(d.dot(t)) + noise
-            if self.VERBOSE: print("\tCross: ",d[0]*t[1]-d[1]*t[0])
-            if self.VERBOSE: print("\tDot  : ",d.dot(t))
-            self.direction = np.append(self.direction,[np.array([np.cos(theta),np.sin(theta)])],axis=0)
+            # kprime = - np.matmul(self.R(theta + noise),N*np.sign(k.dot(N)))
+            kprime = k.dot(curve.t_hat(t))*curve.t_hat(t) - N
 
-        if self.VERBOSE: print("\tTheta1: ",theta1*180/np.pi,"\tTheta2: ",theta2*180/np.pi)
-        if self.VERBOSE: print("\tTheta : ",theta*180/np.pi)
-        if self.VERBOSE: print("\tArcCenter: ",toArc.C)
-        if self.VERBOSE: print("n1: ",n1, "\tn2: ", n2)
-    
-    def distToClosestArc(self,arcs,p,d):
-        dists = [float("inf")]
-        selectedArcs  = [None]
-        for arc in arcs:
-            r = (p-arc.C)
-            a = -2*(d.dot(r))
-            b = mag(r)**2-arc.R**2
+        # Append with the new direction
+        self.direction = np.append(self.direction,[kprime],axis=0)
 
-            s = []
-            if a**2-4*b > 0:
-                s.append(0.5*(a+(a**2-4*b)**0.5))
-                s.append(0.5*(a-(a**2-4*b)**0.5))
-            if self.VERBOSE: print("\t\t\tm:",arc.phi*180/np.pi," M:",(arc.phi+arc.theta)*180/np.pi, " C:",arc.C)
-            if self.VERBOSE: print("\t\tDistCandidates: ", s)
-            if self.VERBOSE: print("\t\tArgsCandidates: ", [arg(r+S*d)*180/np.pi for S in s])
-            if self.VERBOSE: print("\t\tPosiCandidates: ", [(p+S*d) for S in s])
+        # Printout tests
+        if VERBOSE: print("Testing Refraction:")
+        if VERBOSE: print("\t n1sin(θ1) - n2sin(θ2) =",n1*np.sin(theta)-n2*np.sin(np.arccos(abs(N.dot(self.direction[-1])))))
+        if VERBOSE: print("\tn1: ",n1,"\tn2: ",n2)
 
-            for S in s:
-                if S>1e-10: # If You don't have to spontaneously turn back
-                    if isInRange(arg(r+S*d),arc.phi,arc.phi+arc.theta):
-                    # if arg(r+S*d)>=arc.phi and arg(r+S*d)<=arc.phi+arc.theta: # If you hit within the arc
-                        dists.append(S)
-                        selectedArcs.append(arc)
-        
-        if self.VERBOSE: print("\t\tAllDists: ", dists)
 
-        return min(dists), selectedArcs[dists.index(min(dists))]
-    
-    def shootThroughLenses(self,lenses):
+    # This function applies the shoot throuhg lens routine to multiple lenses
+    def shoot_through_lenses(self,lenses):
         for lens in lenses:
-            self.shootThroughLens(lens, extendAtEnd=False)
-        self.shootThroughLens(lenses[-1])
+            self.shoot_through_lens(lens, extend_at_end=False)
+        self.shoot_through_lens(lenses[-1])
 
-    def renewRefractiveIndex(self,lens):
-        if self.ncurrent != 1: self.ncurrent = 1
-        else: self.ncurrent = lens.getRefractiveIndex(self.energy)
-        return self.ncurrent
+    # Renews refractive index based in the previous one
+    def renew_refractive_index(self,lens):
+        if self.n_current != 1: self.n_current = 1
+        else: self.n_current = lens.get_refractive_index(self.energy)
+        return self.n_current
 
+    # Draws the ray in a specified ax
     def draw(self, ax, color = 'lime', lw = 0.5):
         return ax.plot(self.points.T[0],self.points.T[1],c=color,lw=lw)
