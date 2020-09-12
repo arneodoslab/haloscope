@@ -36,8 +36,14 @@ class Lens:
     def get_refractive_index(self,energy):
         return np.interp(energy,self.refractive_index_data[0],self.refractive_index_data[1])
 
+    # Draws the frenet frame of each curve at certain points
+    def draw_frenet_frame(self,ax,color='darkgreen',Npts=15,label='Frenet Frame of spline'):
+        for curve in self.curves:
+            curve.draw_frenet_frame(ax,color,Npts,label)
+
     # Moves the center position of each of the two curves so that they are thickness apart
     def add_thickness(self,thickness):
         return
         # self.curves[0].position += np.array([-thickness/2,0.])
         # self.curves[1].position += np.array([ thickness/2,0.])
+    

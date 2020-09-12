@@ -194,11 +194,10 @@ class Arc:
 class Spline:
 
     # Constructor
-    def __init__(self, X:np.array, Y:np.array, phi:float = 0, alpha = None, scale:float = 2, theta:float = np.pi/2, position = np.array([0,-1])):
+    def __init__(self, X:np.array, Y:np.array, phi:float = 0, scale:float = 2, theta:float = np.pi/2, position = np.array([0,-1])):
         self.X = X
         self.Y = Y
         self.phi = phi
-        self.alpha = alpha
         self.scale = scale
         self.theta = theta
         self.position = position

@@ -11,7 +11,7 @@ from curves import *
 
 
 # Simulation Parameters
-Nrays = 100
+Nrays = 40
 ray_energy = 1.5
 rayBandwidth = 5.08
 ray_energy_range = [0.2,5.9] # eV
@@ -19,7 +19,7 @@ ray_generation_range = [-2.54,2.54]
 ray_generation_x_pos = -4
 
 detector_pos = 2
-detector_width = 0.05
+detector_width = 0.1
 Bandwidth = 0.1
 
 noise_std = 0.01
@@ -62,9 +62,9 @@ VERBOSE = False
 
 
 # Create lens 1
-arc1 = Arc(point_1=np.array([0,2.54]),point_2=np.array([1,0]),point_3=np.array([0,-2.54]))
-spline1 = Spline([0,0.25,0.5],[0,0.3,0.5],scale=5.08,position=np.array([1,-2.54]))
-lens = Lens([arc1,spline1], noise_std=noise_std, noise_amplitude=noise_amplitude, thickness=edge_thickness)
+spline1 = Spline([0,0.25,0.5],[0,0.2,0.3],scale=5.08,position=np.array([1,-2.54]),phi = 2)
+spline2 = Spline([0,0.25,0.5],[0,0.2,0.3],scale=5.08,position=np.array([1.5,+2.54]),theta=-np.pi/2,phi = 2)
+lens = Lens([spline1,spline2], noise_std=noise_std, noise_amplitude=noise_amplitude, thickness=edge_thickness)
 # print("RADIUS 1: ",lens.arc1.R,"\nRADIUS 2: ",lens.arc2.R,"\nMAX THICKNESS: ",lens.arc1.R+lens.arc2.R+lens.thickness)
 
 # # Create lens 2
@@ -174,6 +174,7 @@ def createRays(Nrays=Nrays,ray_generation_x_pos=ray_generation_x_pos,ray_generat
 def draw_lenses(lenses,ax):
     for lens in lenses:
         lens.draw(ax)
+        # lens.draw_frenet_frame(ax)
 
 # Update the plots based on the given values
 def update(val=-1):

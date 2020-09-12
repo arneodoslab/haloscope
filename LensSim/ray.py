@@ -91,7 +91,8 @@ class Ray:
             theta_prime = np.arcsin(n1/n2*np.sin(theta))*np.sign(N[0]*k[1]-N[1]*k[0])*np.sign(N.dot(k))
             kprime = np.matmul(self.R(theta_prime + noise),N*np.sign(k.dot(N)))
         else:
-            kprime = - np.matmul(self.R(theta + noise),N*np.sign(k.dot(N)))
+            # kprime = - np.matmul(self.R(theta + noise),N*np.sign(k.dot(N)))
+            kprime = k.dot(curve.t_hat(t))*curve.t_hat(t) - N
 
         # Append with the new direction
         self.direction = np.append(self.direction,[kprime],axis=0)
