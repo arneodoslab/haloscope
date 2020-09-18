@@ -54,8 +54,8 @@ def create_lens(theta):
     Y_2 = np.array([0,theta[5],theta[6]])
     phi_2 = theta[7]
 
-    spline_1 = Spline(X_1,Y_1,phi_1,theta=-np.pi/2,scale=lens_diameter,position=np.array([-lens_thickness,0]))
-    spline_2 = Spline(X_2,Y_2,phi_2,theta=np.pi/2,scale=lens_diameter,position=np.array([lens_thickness,0]))
+    spline_1 = Spline(X_1,Y_1,phi_1,theta=-np.pi/2,scale=lens_diameter,position=np.array([lens_thickness/2,lens_diameter/2]))
+    spline_2 = Spline(X_2,Y_2,phi_2,theta=np.pi/2,scale=lens_diameter,position=np.array([-lens_thickness/2,-lens_diameter/2]))
     lens_1 = Lens([spline_1,spline_2],noise_std=noise_std,noise_amplitude=noise_amplitude)
 
     return lens_1
