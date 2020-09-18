@@ -64,6 +64,10 @@ VERBOSE = False
 # Create lens 1
 spline1 = Spline([0,0.25,0.5],[0,0.2,0.3],scale=5.08,position=np.array([1,-2.54]),phi = 2)
 spline2 = Spline([0,0.25,0.5],[0,0.2,0.3],scale=5.08,position=np.array([1.5,+2.54]),theta=-np.pi/2,phi = 2)
+
+# spline1 = Spline([0,0.29451927,0.5],[0, 0.23757851, 0.61589676],scale=5.08,position=np.array([1,-2.54]),phi = 0.8354121)
+# spline2 = Spline([0,0.29882796,0.5],[0,0.04586703,0.52817736],scale=5.08,position=np.array([1.5,+2.54]),theta=-np.pi/2,phi = 0.84146128)
+
 lens = Lens([spline1,spline2], noise_std=noise_std, noise_amplitude=noise_amplitude, thickness=edge_thickness)
 # print("RADIUS 1: ",lens.arc1.R,"\nRADIUS 2: ",lens.arc2.R,"\nMAX THICKNESS: ",lens.arc1.R+lens.arc2.R+lens.thickness)
 
@@ -158,7 +162,7 @@ def shoot_rays(rays,lenses,ax=ax,draw=True,VERBOSE=False,color='aqua'):
         if draw: ray.draw(ax,color=color)
 
 # Create Rays
-def createRays(Nrays=Nrays,ray_generation_x_pos=ray_generation_x_pos,ray_generation_range=ray_generation_range,ray_energy_range=ray_energy_range,rand=True):
+def create_rays(Nrays=Nrays,ray_generation_x_pos=ray_generation_x_pos,ray_generation_range=ray_generation_range,ray_energy_range=ray_energy_range,rand=True):
     rays = []
     print("Creating Rays")
 
@@ -191,7 +195,7 @@ def update(val=-1):
 
     # Create and shoot new rays
     global rays
-    rays = createRays(Nrays=int(sNumber.val),ray_energy_range=[sEnergy.val]*2,rand=radio.value_selected=='random',\
+    rays = create_rays(Nrays=int(sNumber.val),ray_energy_range=[sEnergy.val]*2,rand=radio.value_selected=='random',\
         ray_generation_range=[-sBandwidth.val/2,sBandwidth.val/2])
     shoot_rays(rays,lenses,VERBOSE=VERBOSE)
 

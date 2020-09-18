@@ -57,7 +57,7 @@ rays = []
 # Create Detector
 detector = Detector(position=np.array([detectorPos,0.]),height=detectorWidth)
 
-
+    
 ## HELPING FUNCTIONS ####################################################################
 
 # Create Rays

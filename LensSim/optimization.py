@@ -122,6 +122,8 @@ def handler(theta):
 
 # Optimization command
 if __name__=='__main__':
+    # solution = optimize.minimize(handler, theta0, method = 'L-BFGS-B', bounds=bounds)
+    # solution = optimize.shgo(handler,bounds, n=200, iters=5, sampling_method='sobol')
     solution = optimize.differential_evolution(handler,bounds, updating='deferred',workers=Ncores)
 
     print(solution)
