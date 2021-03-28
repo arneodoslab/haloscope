@@ -10,23 +10,23 @@ from curves import *
 
 ## INITIALISATION PARAMETERS ############################################################
 
-# Ray Parameters
-N_rays = 200
-ray_energy = 1.5
-ray_generation_range = [-2.4,2.4]
-ray_generation_xpos = -4
-
-# Detector Parameters
-detector_width = 0.2
-detector_bandwidth = 0.1
-detector_start_pos = np.array([1,0])
-detector_end_pos   = np.array([10,0])
-
 # Lens Parameters
 noise_std = 0.01
 noise_amplitude = 0
 lens_thickness = 0.3
-lens_diameter = 5.05
+lens_diameter = 5.08
+
+# Ray Parameters
+N_rays = 700
+ray_energy = 1.53
+ray_generation_range = [-lens_diameter/2,lens_diameter/2]
+ray_generation_xpos = -4
+
+# Detector Parameters
+detector_width = 0.025
+detector_bandwidth = 0.1
+detector_start_pos = np.array([5,0])
+detector_end_pos   = np.array([10,0])
 
 # Curve Parameters
 X_1 = np.array([0,0.25,0.5])
@@ -38,8 +38,9 @@ Y_2 = np.array([0,0.25,0.5])
 phi_2 = 2
 
 # Simulation Parameters
-N_cores = 4
-bounds = [(0.15,0.3),(0.01,0.3),(0.01,0.8),(0.8,1.2),(0.15,0.3),(0.01,0.3),(0.01,0.8),(0.8,1.2)]
+N_cores = 16
+bounds = [(0.1,0.45),(0.0/lens_diameter,1.5/lens_diameter),(0.0/lens_diameter,2/lens_diameter),(0.0,2),\
+	  (0.1,0.45),(0.0/lens_diameter,1.5/lens_diameter),(0.0/lens_diameter,2/lens_diameter),(0.0,2)]
 VERBOSE = False
 
 ## HELPING FUNCTIONS ####################################################################
@@ -126,3 +127,5 @@ lenses = [lens_1]
 if __name__=='__main__':
     solution = optimize.differential_evolution(handler, bounds, updating='deferred', workers=N_cores)
     print(solution)
+    file = open('results.txt','a+')
+    file.write(str(solution)+'\n\n')

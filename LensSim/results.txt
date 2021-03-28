@@ -1,0 +1,8 @@
+     fun: 0.0
+ message: 'Optimization terminated successfully.'
+    nfev: 62049
+     nit: 516
+ success: True
+       x: array([0.10156372, 0.03954346, 0.02515846, 1.96149209, 0.17866742,
+       0.19207322, 0.27042864, 1.67149241])
+
