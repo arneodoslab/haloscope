@@ -18,13 +18,14 @@ ray_energy_range = [0.2,5.9] # eV
 ray_generation_range = [-2.54,2.54]
 ray_generation_x_pos = -4
 
-detector_pos = 2
+detector_pos = 2.5+2.53
 detector_width = 0.1
 Bandwidth = 0.1
 
 noise_std = 0.01
 noise_amplitude = 0
 
+lens_diameter = 5.08
 lens_right_point = np.array([0.001,0])
 lens_left_point = np.array([-2,0]) #Thickness 0
 
@@ -61,14 +62,36 @@ ray_y_lim = [-4,4]
 VERBOSE = False
 
 
-# Create lens 1
-spline1 = Spline([0,0.25,0.5],[0,0.2,0.3],scale=5.08,position=np.array([1,-2.54]),phi = 2)
-spline2 = Spline([0,0.25,0.5],[0,0.2,0.3],scale=5.08,position=np.array([1.5,+2.54]),theta=-np.pi/2,phi = 2)
+# # Create lens 1
+# spline1 = Spline([0,0.25,0.5],[0,0.2,0.3],scale=5.08,position=np.array([1,-2.54]),phi = 2)
+# spline2 = Spline([0,0.25,0.5],[0,0,0],scale=5.08,position=np.array([1.5,+2.54]),theta=-np.pi/2,phi =0)
 
 # spline1 = Spline([0,0.29451927,0.5],[0, 0.23757851, 0.61589676],scale=5.08,position=np.array([1,-2.54]),phi = 0.8354121)
 # spline2 = Spline([0,0.29882796,0.5],[0,0.04586703,0.52817736],scale=5.08,position=np.array([1.5,+2.54]),theta=-np.pi/2,phi = 0.84146128)
 
-lens = Lens([spline1,spline2], noise_std=noise_std, noise_amplitude=noise_amplitude, thickness=edge_thickness)
+# lens = Lens([spline1,spline2], noise_std=noise_std, noise_amplitude=noise_amplitude)
+
+def create_lens(theta):
+    X_1 = np.array([0,theta[0],0.5])
+    Y_1 = np.array([0,theta[1],theta[2]])
+    phi_1 = theta[3]
+
+    X_2 = np.array([0,theta[4],0.5])
+    Y_2 = np.array([0,theta[5],theta[6]])
+    phi_2 = theta[7]
+
+    spline_1 = Spline(X_1,Y_1,phi_1,theta=-np.pi/2,scale=lens_diameter,position=np.array([edge_thickness/2,lens_diameter/2]))
+    spline_2 = Spline(X_2,Y_2,phi_2,theta=np.pi/2,scale=lens_diameter,position=np.array([-edge_thickness/2,-lens_diameter/2]))
+    lens_1 = Lens([spline_1,spline_2],noise_std=noise_std,noise_amplitude=noise_amplitude)
+
+    return lens_1
+
+theta = np.array([3.71212645e-01, 2.06597708e-01, 2.26587497e-01, 7.00834358e-01,
+       2.03324077e-01, 1.19777015e-07, 1.19929310e-08, 1.81088532e-02])
+       
+    # 1.00206055e-01, 6.05608216e-02, 3.58659916e-04, 1.99829192e+00,1.41300790e-01, 1.44748335e-01, 3.02983600e-01, 1.13095198e+00
+lens = create_lens(theta)
+
 # print("RADIUS 1: ",lens.arc1.R,"\nRADIUS 2: ",lens.arc2.R,"\nMAX THICKNESS: ",lens.arc1.R+lens.arc2.R+lens.thickness)
 
 # # Create lens 2
