@@ -159,7 +159,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		OpRefSurface->SetType(dielectric_dielectric);
 		OpRefSurface->SetModel(unified);
 		OpRefSurface->SetFinish(polished);
-		OpRefSurface->SetSigmaAlpha(0.1);
+		OpRefSurface->SetSigmaAlpha(0.0001);
 		
 				
 		G4double n[nEntries];
@@ -190,7 +190,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		OpRefSurface->SetType(dielectric_dielectric);
 		OpRefSurface->SetModel(unified);
 		OpRefSurface->SetFinish(polished);
-		OpRefSurface->SetSigmaAlpha(0.1);
+		OpRefSurface->SetSigmaAlpha(0.0001);
 		
 		for (int j =0;j<nEntries;j++) n[j] = Si3N4RefractiveIndex[j]/SiO2RefractiveIndex[j];
 
@@ -232,7 +232,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	OpRefSurface->SetType(dielectric_dielectric);
 	OpRefSurface->SetModel(unified);
 	OpRefSurface->SetFinish(polished);
-	OpRefSurface->SetSigmaAlpha(0.1);
+	OpRefSurface->SetSigmaAlpha(0.0001);
 
 	G4MaterialPropertiesTable* SMPT1 = new G4MaterialPropertiesTable();
 	// SMPT1->AddProperty("RINDEX",acrylicEnergies,acrylicRefractiveIndex,nEntries); //Fresnel Lens
