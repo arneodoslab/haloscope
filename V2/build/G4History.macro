@@ -2,8 +2,6 @@
 /run/initialize
 /detector/zpos 70
 /run/reinitializeGeometry
-/detector/outName out/results.txt
-/run/reinitializeGeometry
-/detector/outName out/results.csv
+/detector/outName /out/results.csv
 /run/reinitializeGeometry
 /run/beamOn 5000
