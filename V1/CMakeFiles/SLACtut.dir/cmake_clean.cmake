@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/SLACtut.dir/tutorial.cc.o"
   "CMakeFiles/SLACtut.dir/src/ActionInitialization.cc.o"
   "CMakeFiles/SLACtut.dir/src/DetectorConstruction.cc.o"
   "CMakeFiles/SLACtut.dir/src/EventAction.cc.o"
@@ -7,9 +8,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/SLACtut.dir/src/PrimaryGeneratorAction.cc.o"
   "CMakeFiles/SLACtut.dir/src/PrimaryGeneratorAction__OLD.cc.o"
   "CMakeFiles/SLACtut.dir/src/SD.cc.o"
-  "CMakeFiles/SLACtut.dir/tutorial.cc.o"
-  "SLACtut"
   "SLACtut.pdb"
+  "SLACtut"
 )
 
 # Per-language clean rules from dependency scanning.

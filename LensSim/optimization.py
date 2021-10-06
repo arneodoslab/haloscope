@@ -29,7 +29,7 @@ noiseAmplitude = 0
 lensRightPoint = np.array([2.54,0])
 lensLeftPoint = np.array([-2.54,0])
 lensCommonPoint = np.array([0,2.54])
-edgeThickness = 0.18
+edgeThickness = 0.3
 
 theta0 = [2.54,-2.54]
 bounds = [(0.001,2.55),(-2.55,-0.001)]

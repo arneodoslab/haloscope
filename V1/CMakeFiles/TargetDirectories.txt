@@ -1,8 +1,8 @@
-/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/CMakeFiles/install/local.dir
-/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/CMakeFiles/list_install_components.dir
-/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/CMakeFiles/rebuild_cache.dir
-/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/CMakeFiles/edit_cache.dir
-/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/CMakeFiles/install/strip.dir
-/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/CMakeFiles/install.dir
-/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/CMakeFiles/Tutorial.dir
-/Users/panos/Documents/NYU/6.Extracurricular/11.Haloscope/0.Simulations/V1/CMakeFiles/SLACtut.dir
+/home/po524/Documents/haloscope/V1/CMakeFiles/install/strip.dir
+/home/po524/Documents/haloscope/V1/CMakeFiles/install/local.dir
+/home/po524/Documents/haloscope/V1/CMakeFiles/install.dir
+/home/po524/Documents/haloscope/V1/CMakeFiles/list_install_components.dir
+/home/po524/Documents/haloscope/V1/CMakeFiles/rebuild_cache.dir
+/home/po524/Documents/haloscope/V1/CMakeFiles/edit_cache.dir
+/home/po524/Documents/haloscope/V1/CMakeFiles/Tutorial.dir
+/home/po524/Documents/haloscope/V1/CMakeFiles/SLACtut.dir
