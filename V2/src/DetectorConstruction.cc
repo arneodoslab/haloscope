@@ -203,18 +203,27 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 	//Add the lens
 	G4GDMLParser parser;
-	parser.Read("FRP_Glass.gdml",false); //Fresnel
-	//parser.Read("lensN-BK7.gdml",false); //Lens 
-	G4LogicalVolume* lensLogical = parser.GetVolume("lens"); //Fresnel
+	// parser.Read("FRP_Glass.gdml",false); //Fresnel
+	// parser.Read("lensN-BK7.gdml",false); //Lens
+	parser.Read("AL50.gdml",false);  //AL05
+
+	// G4LogicalVolume* lensLogical = parser.GetVolume("lens"); //Fresnel
 	//G4LogicalVolume* lensLogical = parser.GetVolume("lensN-BK7"); //Lens
+	G4LogicalVolume* lensLogical = parser.GetVolume("AL50"); //Fresnel
+
 	lensLogical->SetVisAttributes(G4Colour(0.,5.,0.,0.5));
-	G4Material* acrylic = G4Material::GetMaterial("acrylic"); //Fresnel
-	//G4Material* acrylic = G4Material::GetMaterial("NBK7"); //Lens
+
+	// G4Material* acrylic = G4Material::GetMaterial("acrylic"); //Fresnel
+	// G4Material* acrylic = G4Material::GetMaterial("NBK7"); //Lens
+	G4Material* acrylic = G4Material::GetMaterial("NBK7"); //AL50
+
 	lensLogical->SetMaterial(acrylic);
 	G4RotationMatrix* rm = new G4RotationMatrix();
   	rm->rotateX(90*deg); rm->rotateY(90*deg);
-	G4double zLens = 1.5*mm; //Fresnel Lens
-	//G4double zLens = 12.5198*mm; // Lens
+
+	// G4double zLens = 1.5*mm; //Fresnel Lens
+	// G4double zLens = 12.5198*mm; // Lens
+	G4double zLens = 12.5198*mm; // AL50
 	G4VPhysicalVolume* lensPhysical = new G4PVPlacement(rm,G4ThreeVector(0,0,pos[39]*nm+layerHeights[39]*nm+zLens/2),lensLogical,"Physical Lens", worldLogical, false, 0, checkOverlaps);
 
 
@@ -226,8 +235,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	OpRefSurface->SetSigmaAlpha(0.1);
 
 	G4MaterialPropertiesTable* SMPT1 = new G4MaterialPropertiesTable();
-	SMPT1->AddProperty("RINDEX",acrylicEnergies,acrylicRefractiveIndex,nEntries); //Fresnel Lens
-	//SMPT1->AddProperty("RINDEX",NBK7Energies,NBK7RefractiveIndex,nEntries); //Lens
+	// SMPT1->AddProperty("RINDEX",acrylicEnergies,acrylicRefractiveIndex,nEntries); //Fresnel Lens
+	// SMPT1->AddProperty("RINDEX",NBK7Energies,NBK7RefractiveIndex,nEntries); //Lens
+	SMPT1->AddProperty("RINDEX",NBK7Energies,NBK7RefractiveIndex,nEntries); //AL50
 	OpRefSurface->SetMaterialPropertiesTable(SMPT1);
 	
 	new G4LogicalBorderSurface("RefSurface",layerPhysical[39],lensPhysical,OpRefSurface);
