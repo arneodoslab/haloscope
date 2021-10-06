@@ -1,0 +1,4 @@
+/vis/viewer/set/viewpointThetaPhi 90 0
+/detector/zpos 200
+/vis/viewer/panTo 200 0 mm
+/vis/viewer/zoom 10
