@@ -53,7 +53,7 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 {   
     fParticleGun->GeneratePrimaryVertex(event);
-	G4double r = G4UniformRand()*4.9/2*cm;
+	G4double r = G4UniformRand()*4.25/2*cm;
 	G4double theta = G4UniformRand()*360*deg;
 	G4double pos3 = G4UniformRand()*10*um;
     fParticleGun->SetParticlePosition(G4ThreeVector(r*std::cos(theta),r*std::sin(theta),pos3));
