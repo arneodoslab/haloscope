@@ -129,8 +129,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 	//Creating the bilayers for the simulation
 	//double layerHeights[40] = {243,175,247,177,250,180,254,182,257,185,261,187,265,190,268,193,272,195,276,198,280,201,283,203,287,206,291,209,295,212,300,215,304,218,308,221,312,224,317,227};
-	const int numlayers = 40
-	double layerHeights[46] = {264,205,264,297,291,209,272,235,284,186,240,203,268,207,281,202,306,244,270,219,282,217,274,209,260,178,318,222,299,228,276,209,250,216,277,251,257,234,278,229,271,217,282,221,283,229}
+	const int numlayers = 46
+	double layerHeights[numlayers] = {264,205,264,297,291,209,272,235,284,186,240,203,268,207,281,202,306,244,270,219,282,217,274,209,260,178,318,222,299,228,276,209,250,216,277,251,257,234,278,229,271,217,282,221,283,229}
 
 	double pos[numlayers]; for(int i=0;i<numlayers;i++)pos[i]=0;
 	for(int i=1;i<numlayers;i++)pos[i]+=pos[i-1]+(layerHeights[i]+layerHeights[i-1])/2;
@@ -139,11 +139,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	G4Material* sio2 = G4Material::GetMaterial("SiO2");
 	G4Material* si3n4 = G4Material::GetMaterial("Si3N4");
 
-	G4VSolid* layer[40];
-	G4LogicalVolume* layerLogical[40];
-	G4VPhysicalVolume* layerPhysical[40];
+	G4VSolid* layer[numlayers];
+	G4LogicalVolume* layerLogical[numlayers];
+	G4VPhysicalVolume* layerPhysical[numlayers];
 
-	for(int i=0;i<40;i++){
+	for(int i=0;i<numlayers;i++){
 		cout << "\tObject " << i << ": " << pos[i] << " nm" <<endl;  
 
 		layer[i] = new G4Tubs("Solid Layer "+std::to_string(i),0,5.08/2*cm,layerHeights[i]*nm/2,0,2*M_PI);
