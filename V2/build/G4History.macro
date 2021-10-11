@@ -4,4 +4,4 @@
 /run/reinitializeGeometry
 /detector/outName out/results.csv
 /run/reinitializeGeometry
-/run/beamOn 10000
+/run/beamOn 5000

@@ -40,8 +40,8 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/opt/geant4/geant4-10.4/include/Geant4"
   "../include"
+  "/opt/geant4/geant4-10.4/include/Geant4"
   "/opt/anaconda3/include/qt"
   "/opt/anaconda3/include/qt/QtWidgets"
   "/opt/anaconda3/include/qt/QtGui"

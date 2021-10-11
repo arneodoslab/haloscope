@@ -6,8 +6,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/haloscopeSim.dir/src/Hit.cc.o"
   "CMakeFiles/haloscopeSim.dir/src/PrimaryGeneratorAction.cc.o"
   "CMakeFiles/haloscopeSim.dir/src/SD.cc.o"
-  "haloscopeSim.pdb"
   "haloscopeSim"
+  "haloscopeSim.pdb"
 )
 
 # Per-language clean rules from dependency scanning.
