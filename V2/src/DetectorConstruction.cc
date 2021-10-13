@@ -205,11 +205,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	G4GDMLParser parser;
 	// parser.Read("FRP_Glass.gdml",false); //Fresnel
 	// parser.Read("lensN-BK7.gdml",false); //Lens
-	parser.Read("AL50.gdml",false);  //AL50
+	parser.Read("AL51.gdml",false);  //AL50
 
 	// G4LogicalVolume* lensLogical = parser.GetVolume("lens"); //Fresnel
 	//G4LogicalVolume* lensLogical = parser.GetVolume("lensN-BK7"); //Lens
-	G4LogicalVolume* lensLogical = parser.GetVolume("AL50"); //AL50
+	G4LogicalVolume* lensLogical = parser.GetVolume("AL51"); //AL50
 
 	lensLogical->SetVisAttributes(G4Colour(0.,5.,0.,0.5));
 
@@ -224,7 +224,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	// G4double zLens = 1.5*mm; //Fresnel Lens
 	// G4double zLens = 12.5198*mm; // Lens
 	G4double zLens = 21*mm; // AL50
-	G4double yLens = 0; //-50*mm; // AL50
+	G4double yLens = -50*mm; // AL50
 	G4VPhysicalVolume* lensPhysical = new G4PVPlacement(rm,G4ThreeVector(0,yLens/2,pos[39]*nm+layerHeights[39]*nm+zLens/2),lensLogical,"Physical Lens", worldLogical, false, 0, checkOverlaps);
 
 
