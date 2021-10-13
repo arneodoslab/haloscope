@@ -1,0 +1,3 @@
+/detector/outName out/results.csv
+/detector/zpos 70
+/run/beamOn 5000
