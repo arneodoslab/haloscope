@@ -11,6 +11,4 @@
 /run/reinitializeGeometry
 /detector/zpos 70
 /run/reinitializeGeometry
-/run/beamOn 2000
-/run/beamOn 8000
-/run/beamOn 10000
+/run/beamOn 50000
