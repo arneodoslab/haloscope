@@ -205,7 +205,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	G4GDMLParser parser;
 	// parser.Read("FRP_Glass.gdml",false); //Fresnel
 	// parser.Read("lensN-BK7.gdml",false); //Lens
-	parser.Read("AL50.gdml",false);  //AL05
+	parser.Read("AL51.gdml",false);  //AL05
 
 	// G4LogicalVolume* lensLogical = parser.GetVolume("lens"); //Fresnel
 	//G4LogicalVolume* lensLogical = parser.GetVolume("lensN-BK7"); //Lens

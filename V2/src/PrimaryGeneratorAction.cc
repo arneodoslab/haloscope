@@ -31,7 +31,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 	fPhoton = particleTable->FindParticle(particleName="opticalphoton");
     
     // default particle kinematics
-	fParticleGun->SetParticleEnergy(2.*eV);
+	fParticleGun->SetParticleEnergy(1.65*eV);
     fParticleGun->SetParticleDefinition(G4OpticalPhoton::OpticalPhotonDefinition());
 	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
 	
