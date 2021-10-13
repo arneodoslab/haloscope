@@ -61,9 +61,6 @@
 /vis/viewer/refresh
 /vis/viewer/zoom 10
 /vis/viewer/refresh
-/run/beamOn 100
-/vis/scene/notifyHandlers scene-0
-/vis/scene/notifyHandlers scene-0
 /control/execute measure.mac
 /detector/outName out/results.csv
 /run/reinitializeGeometry
@@ -71,6 +68,75 @@
 /detector/zpos 70
 /run/reinitializeGeometry
 /vis/scene/notifyHandlers scene-0
-/run/beamOn 5000
+/run/beamOn 50000
 /vis/scene/notifyHandlers scene-0
 /vis/scene/notifyHandlers scene-0
+/vis/viewer/zoom 0.1
+/vis/viewer/refresh
+/control/execute measure.mac
+/detector/outName out/results.csv
+/run/reinitializeGeometry
+/vis/scene/notifyHandlers scene-0
+/detector/zpos 200
+/run/reinitializeGeometry
+/vis/scene/notifyHandlers scene-0
+/run/beamOn 50000
+/vis/scene/notifyHandlers scene-0
+/vis/scene/notifyHandlers scene-0
+/run/beamOn 1000
+/vis/viewer/zoom 0.1
+/vis/viewer/refresh
+/vis/viewer/zoom 100
+/vis/viewer/refresh
+/vis/viewer/zoom 10
+/vis/viewer/refresh
+/vis/viewer/zoom 10
+/vis/viewer/refresh
+/vis/viewer/zoom 0.1
+/vis/viewer/refresh
+/vis/viewer/panTo 199.635 0 mm
+/vis/viewer/refresh
+/vis/viewer/zoom 10
+/vis/viewer/refresh
+/vis/viewer/zoom 2
+/vis/viewer/refresh
+/vis/viewer/zoom 2
+/vis/viewer/refresh
+/vis/viewer/zoom 2
+/vis/viewer/refresh
+/vis/viewer/zoom 0.01
+/vis/viewer/refresh
+/vis/viewer/zoom 100
+/vis/viewer/refresh
+/vis/viewer/zoom 10
+/vis/viewer/refresh
+/vis/viewer/zoom 0.1
+/vis/viewer/refresh
+/vis/viewer/panTo 199.635 -1 mm
+/vis/viewer/refresh
+/vis/viewer/panTo 199.635 -.1 mm
+/vis/viewer/refresh
+/vis/viewer/panTo 199.635 -0.1 mm
+/vis/viewer/refresh
+/vis/viewer/panTo 199.635 0 mm
+/vis/viewer/refresh
+/vis/viewer/panTo 199.635 0.1 mm
+/vis/viewer/refresh
+/vis/viewer/panTo 199.635 0.01 mm
+/vis/viewer/refresh
+/vis/viewer/panTo 199.635 -0.01 mm
+/vis/viewer/refresh
+/vis/viewer/zoom 2
+/vis/viewer/refresh
+/vis/viewer/zoom 2
+/vis/viewer/refresh
+/vis/viewer/panTo 199.635 -0.015 mm
+/vis/viewer/refresh
+/vis/viewer/zoom 2
+/vis/viewer/refresh
+/vis/viewer/panTo 199.634 -0.015 mm
+/vis/viewer/refresh
+/vis/viewer/panTo 199.633 -0.015 mm
+/vis/viewer/refresh
+/vis/viewer/zoom 2
+/vis/viewer/refresh
