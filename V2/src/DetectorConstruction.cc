@@ -209,7 +209,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 	// G4LogicalVolume* lensLogical = parser.GetVolume("lens"); //Fresnel
 	//G4LogicalVolume* lensLogical = parser.GetVolume("lensN-BK7"); //Lens
-	G4LogicalVolume* lensLogical = parser.GetVolume("AL50"); //AL50
+	G4LogicalVolume* lensLogical = parser.GetVolume("AL51"); //AL50
 
 	lensLogical->SetVisAttributes(G4Colour(0.,5.,0.,0.5));
 
