@@ -23,4 +23,4 @@ C++ code for conducting optical photon simulations. Specifically, we generate ph
 1. **[Final Plot](https://github.com/arneodoslab/haloscope/blob/master/Geant4/Results/lens-GEANT4.png):** Plot of frequency vs distance from focal point.
 2. **[Hits Visualization](https://github.com/arneodoslab/haloscope/blob/master/Geant4/Results/hits.gif):** Animation that shows how the hits are distributed to the detector surface as the detector moves away from the lens.
 3. **[Analysis Script](https://github.com/arneodoslab/haloscope/blob/master/Geant4/Results/Results.ipynb):** Jupyter notebook with the analysis of the data from the simulation.
-4. **[Lens Simulation](https://github.com/arneodoslab/haloscope/tree/master/Lens_Simulation):** Code to optimize the shape of the lens for maximum collection efficiency. 
+4. **[Lens Simulation](https://github.com/arneodoslab/haloscope/tree/master/Geant4/Lens_Simulation):** Code to optimize the shape of the lens for maximum collection efficiency. 
