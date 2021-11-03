@@ -1,0 +1,7 @@
+Vbd = 184.5, Temp = -5C, Discriminator Thresh = -10 mV 
+Vbd[V] Avg.DCR[Hz] Sdev[Hz]
+184.5 0.0 0.0
+185.5 75.2 0.6
+187.5 478.2 13.9
+189.5 736.0 20.0
+191.5 944.5 0.8
