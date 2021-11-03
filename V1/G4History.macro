@@ -1,7 +1,0 @@
-/run/verbose 2
-/run/initialize
-/control/execute vis.mac
-/control/verbose 2
-/vis/open OGL 1000x1000-0+0
-/vis/sceneHandler/create OGL
-/vis/viewer/create ! ! 1000x1000-0+0

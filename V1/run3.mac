@@ -1,3 +1,0 @@
-/detector/outName out/out1.csv
-/detector/zpos 150.000
-/run/beamOn 100000
