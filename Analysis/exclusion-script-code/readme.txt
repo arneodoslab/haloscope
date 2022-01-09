@@ -1,6 +1,6 @@
 file descriptions:
 
-big-bad-exclusion.ipynb - notebook to plot all the exclusion curves from different experiments
+final-plot.ipynb - notebook to plot all the exclusion curves from different experiments
 computation.py - contains relevant functions to do haloscope calculations
 dm_statistics.py - contains the code to calculate+plot the upper limits and discovery power
 optimization.py - contains the code for stack optimization
