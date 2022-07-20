@@ -6,10 +6,19 @@ Here we provide all the code used in the analysis for the publication found [her
 
 # Contents
 
-1. **[Analysis]() |** 
+1. **[Analysis]() |** Data and code for SPAD characterization, boost spectrum, and exclusion curve
 2. **[Geant4](https://github.com/arneodoslab/haloscope/tree/master/Geant4) |** Code from the Geant4 optical photon simulation.
 
 # Analysis
+
+## About
+Data analysis and statistics code for the SPAD characterization, boost spectrum optimization, and generating the exclusion curve. 
+
+## Links
+
+1. **[SPAD Plots](https://github.com/arneodoslab/haloscope/blob/master/Analysis/apd-characterization/excelitas-characterization.ipynb):** SPAD characterization plots corresponding to figure 9 in the paper
+2. **[Boost Spectrum with Error Band](https://github.com/arneodoslab/haloscope/blob/master/Analysis/boost-error-optimization/boost-error.ipynb):** Boost spectrum plot with 15th to 85th percentile variations (Figure 10)
+3. **[Exclusion Curve](https://github.com/arneodoslab/haloscope/blob/master/Analysis/exclusion-script-code/final-plot.ipynb):** Exclusion curve calculated using 90% CL upper limits (Figure 11)
 
 
 # Geant4
