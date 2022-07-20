@@ -18,8 +18,10 @@ After executing the program asks to input values for different parameters.
 Values to use:
 observed rate in Hz: 98
 bgd rate in Hz: 96
+time in hours: 2
 plot type: B1
 sensor: excelitas
+percentile to use: 100 for magenta curve, 85 and 15 for the shaded region 
 ---------------
 
 Plot descriptions:
@@ -29,4 +31,4 @@ A2: Discovery power assuming no bgd
 B1: 90% CL upper limit using likelihood ratios
 B2: Discovery power using likelihood ratios
 
-the data is saved in the plot-data file. 
+the data is saved in the plot-data folder. 

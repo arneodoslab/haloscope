@@ -114,39 +114,53 @@ def llr2(n_on, n_off, alpha, s0,s_positive = False):
 
 ##--- upper limit
 def upper_limitB(muB_,days=1,plot=False,mu_=0):
-    alpha = 1
-    print(mu_,muB_)
+
+    ton =  days * 24 * 60 * 60
+    toff = 0.5 * 60 * 60
+    
+    alpha = ton/toff
+ 
     if (mu_==0): # projected limits
-        n_on = muB_
-        n_off = muB_
-        signal = n_on-n_off
-        n_on_median = sps.poisson(signal + alpha*n_off).median()
-        n_off_median = sps.poisson(n_off).median()
+        alpha = 1
+        n_on = muB_  * ton
+        n_off = muB_ * ton
+        signal = n_on - alpha * n_off
+        n_on_median = n_on
+        n_off_median = n_off*alpha
+        print(n_on_median, n_off_median)
+        print(n_on, n_off)
+
     else:
-        n_on = mu_
-        n_off = muB_
-        signal = n_on-n_off
-        n_on_median = signal + alpha*n_off
-        n_off_median = n_off
-    print(n_on_median,n_off_median)
+        n_on = mu_ * ton
+        n_off = muB_ * toff
+#         signal = n_on- alpha *n_off
+#         n_on_median = signal + alpha*n_off
+#         n_off_median = n_off*alpha
+        
     #TS_threshold = sps.chi2(1).isf(2.*0.1) #the reason for the factor 2 is that we're doing an upper-limit only-- 
+    
     TS_threshold = sps.chi2(1).ppf(0.8)
-    function = lambda s : llr(n_on_median, n_off_median, alpha, s, s_positive=True) - TS_threshold
-    try:
-        crossing = brentq(function,0.,100.)
-    except:
-        crossing = brentq(function,0,1000)
+    function = lambda s : llr(n_on, n_off, alpha, s, s_positive=True) - TS_threshold
+    
+    xd = max(0,  n_on- alpha * n_off)
+    xu = n_on + 100*np.sqrt(n_on)
+    
+    crossing = brentq(function,xd,xu)
+    
+    print("non, noff:", n_on,n_off)
     print("the signal at which the median no-signal dataset is excluded at 90% confidence is",crossing)
 
-    return (crossing*days*24*60*60) # since we are doing computations in units of Hz, need to convert into counts
+    return (crossing)
+    #return (0)
 
 ##--- discovery power
 def discovery_powerB(muB_,days=1):
     #bgd = bg*24*60*60
     #print(np.round(bgd))
+    muB_ = np.floor(muB_ * days * 24 * 60 * 60)
     TS_ = sps.chi2(1).ppf(sps.norm.cdf(5))
     alpha=1
-    fc = lambda strength : llr(sps.poisson(strength+alpha*muB_).median(), np.round(muB_), alpha, 0, s_positive=True) - TS_
+    fc = lambda strength : llr(sps.poisson(strength+alpha*muB_).median(), muB_, alpha, 0, s_positive=True) - TS_
     try:
         sStar = brentq(fc,0.,1000.)
     except:
@@ -262,10 +276,10 @@ def main(argv):
         energy = energyMap[sensor]
         kAnalytic = np.zeros(len(energy)) ## store all kappa values here
         
-      
+        print(muS[i], time)
         for j,e in enumerate(energy):
             kAnalytic[j] = rate.get_kappa(j,muS[i],time,sensor=sensor,percentile=per)
-        
+           
         maxlim = max(maxlim,max(kAnalytic))
         nowtime = datetime.now()
         dt_string = nowtime.strftime("%Y%m%d%H%M%S")
@@ -275,8 +289,10 @@ def main(argv):
         #--- plotting
         print(i)
         print("Producing the plot for:"+labelDict[choice])
+        print("kappa min", min(kAnalytic))
         ax.plot(energy,kAnalytic,c="C"+str(i),label=labelDict[choice]+","+parameterMap[keys][-3]+","+"bgd="+str(parameterMap[keys][1])+" Hz"+","+"mu="+str(parameterMap[keys][-2])+" Hz")
-
+    
+    
     #--- plot formatting
     ax.set_yscale("log")
     ax.set_xscale("log")

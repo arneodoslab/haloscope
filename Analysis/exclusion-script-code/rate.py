@@ -17,6 +17,20 @@ N2=1.9166
 AREA_DEFAULT = np.pi*(25 * 1e-3)**2
 PHOTODETECTION = 0.718 # from Geant4 simulations by Panos
 
+
+# GmirrStackNewfinal=[2.64301304e-07, 2.05023010e-07, 2.64161979e-07, 1.97160669e-07,
+#        2.91493464e-07, 2.08610261e-07, 2.71752078e-07, 2.35044161e-07,
+#        2.83712516e-07, 1.86253287e-07, 2.39798560e-07, 2.02669693e-07,
+#        2.68153236e-07, 2.06719177e-07, 2.80724213e-07, 2.02468834e-07,
+#        3.05888313e-07, 2.44214957e-07, 2.69521019e-07, 2.18623695e-07,
+#        2.81774108e-07, 2.17044466e-07, 2.73523119e-07, 2.09159701e-07,
+#        2.59531054e-07, 1.77575379e-07, 3.18208316e-07, 2.21923160e-07,
+#        2.98821231e-07, 2.28392324e-07, 2.76196207e-07, 2.09442925e-07,
+#        2.50243585e-07, 2.15603643e-07, 2.77090494e-07, 2.50607575e-07,
+#        2.57450918e-07, 2.34109609e-07, 2.78263942e-07, 2.29144964e-07,
+#        2.71076475e-07, 2.16733672e-07, 2.82051087e-07, 2.20987585e-07,
+#        2.83066696e-07, 2.28998961e-07]
+
 GmirrStackNewfinal = np.loadtxt("measured-thickness-080821.txt",skiprows=1)[:,0]*1e-9 ## measured thicknesses
 per85boost = np.load("boost-err-85per.npy") ## 85%ile boost factor
 per15boost = np.load("boost-err-15per.npy")
@@ -27,8 +41,10 @@ chirp=1.071
 nLayers=48 # actual number of layers+2 (air and air)
 
 qeX,qeY=optimization.qeData("hamamatsu_qe.csv")
-qeXSensor, qeYSensor = optimization.qeData("excelitas_qe.csv") ## used where the qeCurve is to estimate the error function
-qeYSensor = qeYSensor*(0.02/0.89) ## correction to convert QE to PDE. 0.02 is PDE at 1V excess, 830nm, 0.89 is QE at 830nm. 
+#qeXSensor, qeYSensor = optimization.qeData("excelitas_qe.csv") ## used where the qeCurve is to estimate the error function
+#qeYSensor = qeYSensor*(0.02/0.89) ## correction to convert QE to PDE. 0.02 is PDE at 1V excess, 830nm, 0.89 is QE at 830nm. 
+qeXSensor, qeYSensor = optimization.qeData("excelitas_qe1V.csv")
+qeYSensor = qeYSensor * 100
 qeXlc, qeYlc = optimization.qeData("laser-components_qe.csv")
 #qe_func=interp1d(qeXSensor,qeYSensor)
 
@@ -82,6 +98,7 @@ def get_kappa(energyIdx,N,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,
     '''
     function to get kappa at a specific energy (accessed by index) for a given number of events (N)
     '''
+   # print(time)
     if (percentile==100): 
         wave,beta,__=optimization.get_weights(GmirrWaveNew,GmirrSolNew,qeX,qeY)
     if (percentile==15): 
@@ -89,9 +106,9 @@ def get_kappa(energyIdx,N,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,
        
     if (percentile==85):
         wave,beta = per85boost
-    #print(len(wave),len(beta))
+    #print(len(wave),len(beta)) 
     if sensor=="matsu": qe_func=interp1d(qeX,qeY)
-    elif sensor=="TES": qe_func = lambda w: np.ones(len(w))*50
+    elif sensor=="TES": qe_func = lambda w: np.ones(len(w))*80
     elif sensor=="LC": 
         wave,beta = trim_data(wave,beta,"LC")
         qe_func = interp1d(qeXlc,qeYlc)
@@ -102,8 +119,9 @@ def get_kappa(energyIdx,N,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,
     mass=const.h*const.c/(wave*1e-9)*6.2*1e18
     eta= qe_func(wave)*hitRate/100 ## dividing by 100 since QE is expressed in %
     
+    #print(time)
     kSquare = (N/(area*time))/( (5.2)* (beta[energyIdx]**2)* eta[energyIdx] * 1e31 * fDM)
-   
+    
     return np.sqrt(kSquare)
 
 def get_NvsT(energyIdx,kappa,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,sensor="matsu"):
