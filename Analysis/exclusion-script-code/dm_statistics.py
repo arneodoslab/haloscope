@@ -290,6 +290,11 @@ def main(argv):
         print(i)
         print("Producing the plot for:"+labelDict[choice])
         print("kappa min", min(kAnalytic))
+        print("Energies:")
+        print(repr(energy))
+        print("k Values:")
+        print(repr(kAnalytic))
+        
         ax.plot(energy,kAnalytic,c="C"+str(i),label=labelDict[choice]+","+parameterMap[keys][-3]+","+"bgd="+str(parameterMap[keys][1])+" Hz"+","+"mu="+str(parameterMap[keys][-2])+" Hz")
     
     
