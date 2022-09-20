@@ -81,7 +81,7 @@ def rate_calc(wavelength ,qex, qey,boost,kappa=1e-14, fDM=1,hitRate=PHOTODETECTI
        
     eta= qe_func(wave)*hitRate
     
-    rate = (5.2)* (beta**2)* eta * (1/mass) * 1e23 * (kappa)**2 * fDM ## 1/(days*cm**2 * eV)
+    rate = (5.2)* (beta**2)* eta * (1/mass) * 1e27 * (kappa)**2 * fDM ## 1/(days*cm**2 * eV)
     
     return wave, rate
 
@@ -108,7 +108,7 @@ def get_kappa(energyIdx,N,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,
         wave,beta = per85boost
     #print(len(wave),len(beta)) 
     if sensor=="matsu": qe_func=interp1d(qeX,qeY)
-    elif sensor=="TES": qe_func = lambda w: np.ones(len(w))*80
+    elif sensor=="TES": qe_func = lambda w: np.ones(len(w))*50
     elif sensor=="LC": 
         wave,beta = trim_data(wave,beta,"LC")
         qe_func = interp1d(qeXlc,qeYlc)
@@ -120,8 +120,12 @@ def get_kappa(energyIdx,N,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,
     eta= qe_func(wave)*hitRate/100 ## dividing by 100 since QE is expressed in %
     
     #print(time)
-    kSquare = (N/(area*time))/( (5.2)* (beta[energyIdx]**2)* eta[energyIdx] * 1e31 * fDM)
-    
+    kSquare = (N/(area*time))/( (5.2)* (beta[energyIdx]**2)* eta[energyIdx] * 1e27 * fDM)*(1/mass[energyIdx])
+    #kSquare = (N/(area*time))/( (5.2)* (beta[energyIdx]**2)* eta[energyIdx] * 1e31 * fDM)
+    #print('len mass=')
+    #print(len(mass))
+    #print('ksquare=')
+    #print(kSquare)
     return np.sqrt(kSquare)
 
 def get_NvsT(energyIdx,kappa,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,sensor="matsu"):
@@ -140,8 +144,8 @@ def get_NvsT(energyIdx,kappa,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTI
     mass=const.h*const.c/(wave*1e-9)*6.2*1e18
     eta= qe_func(wave)*hitRate    
     print(beta[energyIdx],mass[energyIdx],eta[energyIdx],kappa,fDM,time,area)
-    nHits = (5.2)* (beta[energyIdx]**2)* eta[energyIdx] * 1e31 * (kappa)**2 * fDM / (time * area)
-
+    nHits = (mass[energyIdx])*(5.2)* (beta[energyIdx]**2)* eta[energyIdx] * 1e27 * (kappa)**2 * fDM / (time * area)
+    #nHits = (5.2)* (beta[energyIdx]**2)* eta[energyIdx] * 1e31 * (kappa)**2 * fDM / (time * area)
     return nHits
 
 

@@ -113,32 +113,25 @@ def llr2(n_on, n_off, alpha, s0,s_positive = False):
     return 2.*ret
 
 ##--- upper limit
-def upper_limitB(muB_,days=1,plot=False,mu_=0):
+def upper_limitB(muB_,dayson,daysoff,plot=False,mu_=1):
 
-    ton =  days * 24 * 60 * 60
-    toff = 0.5 * 60 * 60
+    ton =  dayson * 24 * 60 * 60
+    toff = daysoff *24* 60 * 60
+    #toff =1
+    #ton=1
     
     alpha = ton/toff
- 
-    if (mu_==0): # projected limits
-        alpha = 1
-        n_on = muB_  * ton
-        n_off = muB_ * ton
-        signal = n_on - alpha * n_off
-        n_on_median = n_on
-        n_off_median = n_off*alpha
-        print(n_on_median, n_off_median)
-        print(n_on, n_off)
+   
 
-    else:
-        n_on = mu_ * ton
-        n_off = muB_ * toff
+    n_on = sps.poisson(mu_ * ton).median()
+    n_off = sps.poisson(muB_ * toff).median()
 #         signal = n_on- alpha *n_off
 #         n_on_median = signal + alpha*n_off
 #         n_off_median = n_off*alpha
-        
+
     #TS_threshold = sps.chi2(1).isf(2.*0.1) #the reason for the factor 2 is that we're doing an upper-limit only-- 
-    
+    print("non0, noff0:", n_on,n_off)
+
     TS_threshold = sps.chi2(1).ppf(0.8)
     function = lambda s : llr(n_on, n_off, alpha, s, s_positive=True) - TS_threshold
     
@@ -174,14 +167,14 @@ def get_cmap(n, name='hsv'):
     return plt.cm.get_cmap(name, n)
 ##--- stack functions
 
-def n_vs_eV(kappa=1e-11,fDM=1,hitRate=0.75,area=AREA_DEFAULT,time=1):
+def n_vs_eV(kappa=1e-11,fDM=1,hitRate=0.75,area=AREA_DEFAULT,timeon=1):
     '''
     area in units of cm^2
     time in units of days
     returns energy,number of events
     '''
     m,rate_curve = rate.get_rate(kappa)
-    N = rate_curve*(m*area*time)
+    N = rate_curve*(m*area*timeon)
     return m,N
 
 ##--- helper functions
@@ -195,19 +188,26 @@ def get_critical(paramDict):
     
     for i,keys in enumerate(paramDict):
         choice = paramDict[keys][0] 
-        time = paramDict[keys][2]
+        timeon = paramDict[keys][2]
+        timeoff = paramDict[keys][3]
+
+        print('time when we get critical')
+        print(timeon,timeoff)
         bgd = paramDict[keys][1]
         mu = paramDict[keys][-2]
 
         if (choice=="A1"):
-            muS[i] = poisson_1sided_interval(bgd,beta)-np.round(bgd)
+            muS[i] = poisson_1sided_interval(bgd*timeon*24*60*60,beta)-np.round(bgd*timeon*24*60*60)
         if (choice=="A2"):
             sigmaDiscovery = 5
             muS[i] = disc_powerA(bgd,sigmaDiscovery)
         if (choice=="B1"):
-            muS[i] = upper_limitB(bgd,days=time,mu_=mu)
+            muS[i] = upper_limitB(bgd,dayson=timeon,daysoff=timeoff,mu_=mu)
         if (choice=="B2"):
-            muS[i] = discovery_powerB(bgd,days=time)
+            muS[i] = discovery_powerB(bgd,days=timeon)
+    print('muS:')
+        
+    print(muS)
     return muS 
     
 
@@ -216,7 +216,7 @@ def main(argv):
     #--- default values
     mu = 0
     bgd = 0
-    time = 1 
+    timeon = 1 
     choices = []
     percentile = 1
     labelDict =	{
@@ -242,13 +242,14 @@ def main(argv):
     inputString = ""
     while (inputString!="exit" and inputString!="e"):
         try:
-            mu = float(input ("Enter observed rate in Hz, enter 0 for off experiment :"))
+            mu = float(input ("Enter observed rate in Hz:"))
             bgd = float(input ("Enter bgd rate in Hz :"))
-            time = float(input ("Enter time in hours :"))/24
+            timeon = float(input ("Enter measurement time in hours :"))/24
+            timeoff = float(input ("Enter background time in hours :"))/24
             qeChoice = input ("Enter the sensor ('matsu','excelitas','LC', or 'TES') :")
             plotChoice = input ("Enter the type of plot (A1,A2,B1,B2) :")
             boostpercentile = int(input ("Enter the percentile to use, 100 for full boost :"))
-            parameterMap[str(count)]=[plotChoice,bgd,time,qeChoice,mu,boostpercentile]
+            parameterMap[str(count)]=[plotChoice,bgd,timeon,timeoff,qeChoice,mu,boostpercentile]
             inputString = input ("type 'e' or 'exit' to quit, anything else to add more options :")
             count+=1
             if count==5 : break ## more than 5 plots will be painful
@@ -268,6 +269,10 @@ def main(argv):
     #--- get kappa values and plot
     cmap = get_cmap(len(choices))
     maxlim = 0
+    print('Parameter map:')
+    print(parameterMap)
+    print('enumerate Parameter map:')
+    print(list(enumerate(parameterMap)))
     for i,keys in enumerate(parameterMap):
         
         choice = parameterMap[keys][0]
@@ -276,15 +281,15 @@ def main(argv):
         energy = energyMap[sensor]
         kAnalytic = np.zeros(len(energy)) ## store all kappa values here
         
-        print(muS[i], time)
+        print(muS[i], timeon)
         for j,e in enumerate(energy):
-            kAnalytic[j] = rate.get_kappa(j,muS[i],time,sensor=sensor,percentile=per)
+            kAnalytic[j] = rate.get_kappa(j,muS[i],timeon,sensor=sensor,percentile=per)
            
         maxlim = max(maxlim,max(kAnalytic))
         nowtime = datetime.now()
         dt_string = nowtime.strftime("%Y%m%d%H%M%S")
-        np.save("./plot-data/"+dt_string+"B"+str(bgd)+choice+"T"+str(np.round(time,2))+sensor+"Per"+str(per),kAnalytic)
-        np.save("./plot-data/"+dt_string+"B"+str(bgd)+choice+"T"+str(np.round(time,2))+sensor+"Per"+str(per)+"-energy",energy)
+        np.save("./plot-data/"+dt_string+"B"+str(bgd)+choice+"T"+str(np.round(timeon,2))+sensor+"Per"+str(per),kAnalytic)
+        np.save("./plot-data/"+dt_string+"B"+str(bgd)+choice+"T"+str(np.round(timeon,2))+sensor+"Per"+str(per)+"-energy",energy)
 
         #--- plotting
         print(i)
@@ -302,7 +307,7 @@ def main(argv):
     ax.set_yscale("log")
     ax.set_xscale("log")
 
-    ax.set_ylim(1e-18,maxlim)
+    #ax.set_ylim(1e-18,maxlim)
     ax.set_xlim(0.1,30)
     ax.set_xticks([0.1,0.2,0.5,1.0,2.0,5.0,10,20])
 
