@@ -128,6 +128,43 @@ def get_kappa(energyIdx,N,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,
     #print(kSquare)
     return np.sqrt(kSquare)
 
+def get_g_agamma(bfield,energyIdx,N,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,sensor="matsu",percentile=100):
+    ## time in days
+    '''
+    function to get kappa at a specific energy (accessed by index) for a given number of events (N)
+    '''
+   # print(time)
+    if (percentile==100): 
+        wave,beta,__=optimization.get_weights(GmirrWaveNew,GmirrSolNew,qeX,qeY)
+    if (percentile==15): 
+        wave,beta = per15boost
+       
+    if (percentile==85):
+        wave,beta = per85boost
+    #print(len(wave),len(beta)) 
+    if sensor=="matsu": qe_func=interp1d(qeX,qeY)
+    elif sensor=="TES": qe_func = lambda w: np.ones(len(w))*50
+    elif sensor=="LC": 
+        wave,beta = trim_data(wave,beta,"LC")
+        qe_func = interp1d(qeXlc,qeYlc)
+    else: 
+        wave,beta = trim_data(wave,beta)
+        qe_func=interp1d(qeXSensor,qeYSensor)
+        
+    mass=const.h*const.c/(wave*1e-9)*6.2*1e18
+    eta= qe_func(wave)*hitRate/100 ## dividing by 100 since QE is expressed in %
+    
+    #print(time)
+    kSquare = (N/(area*time))/( (5.2)* (beta[energyIdx]**2)* eta[energyIdx] * 1e27 * fDM)*(1/mass[energyIdx])
+    
+    gagammasquare=kSquare/((bfield*195)**2)*(mass[energyIdx]**2)*(2/3)
+    #kSquare = (N/(area*time))/( (5.2)* (beta[energyIdx]**2)* eta[energyIdx] * 1e31 * fDM)
+    #print('len mass=')
+    #print(len(mass))
+    #print('ksquare=')
+    #print(kSquare)
+    return np.sqrt(gagammasquare)
+
 def get_NvsT(energyIdx,kappa,time=7,area=AREA_DEFAULT,fDM=1,hitRate=PHOTODETECTION,sensor="matsu"):
     ## get number of hits as a function of time
     wave,beta,__=optimization.get_weights(GmirrWaveNew,GmirrSolNew,qeX,qeY)

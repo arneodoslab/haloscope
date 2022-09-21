@@ -197,7 +197,7 @@ def get_critical(paramDict):
         mu = paramDict[keys][-2]
 
         if (choice=="A1"):
-            muS[i] = poisson_1sided_interval(bgd*timeon*24*60*60,beta)-np.round(bgd*timeon*24*60*60)
+            muS[i] = (poisson_1sided_interval(bgd*timeoff*24*60*60,beta)-np.round(bgd*timeoff*24*60*60))*(timeon/timeoff)
         if (choice=="A2"):
             sigmaDiscovery = 5
             muS[i] = disc_powerA(bgd,sigmaDiscovery)
@@ -237,7 +237,8 @@ def main(argv):
     energyMap = {"matsu":energyMatsu,"excelitas":energyExcel,"TES":energyExcel,"LC":energyLC} 
     parameterMap = {}
     count = 0
-    
+    axions=False
+    bfield=0
     #--- user input at each step
     inputString = ""
     while (inputString!="exit" and inputString!="e"):
@@ -250,6 +251,10 @@ def main(argv):
             plotChoice = input ("Enter the type of plot (A1,A2,B1,B2) :")
             boostpercentile = int(input ("Enter the percentile to use, 100 for full boost :"))
             parameterMap[str(count)]=[plotChoice,bgd,timeon,timeoff,qeChoice,mu,boostpercentile]
+            axions = bool(input ("Enter (True) to switch to axion search:"))
+            if axions:
+                bfield = float(input ("Enter the B Field Used in Tesla:"))
+
             inputString = input ("type 'e' or 'exit' to quit, anything else to add more options :")
             count+=1
             if count==5 : break ## more than 5 plots will be painful
@@ -261,7 +266,7 @@ def main(argv):
     muS = get_critical(parameterMap)
     #--- set up plotting environment
     plt.rcParams.update({'font.size': 16})
-
+    print(axions)
     formatter = FuncFormatter(lambda y, _: '{:.3g}'.format(y))
 
     fig,ax = plt.subplots(figsize=(10,8)) # set up the figure
@@ -281,43 +286,75 @@ def main(argv):
         energy = energyMap[sensor]
         kAnalytic = np.zeros(len(energy)) ## store all kappa values here
         
-        print(muS[i], timeon)
         for j,e in enumerate(energy):
             kAnalytic[j] = rate.get_kappa(j,muS[i],timeon,sensor=sensor,percentile=per)
+            if axions:
+                kAnalytic[j] = rate.get_g_agamma(bfield,j,muS[i],timeon,sensor=sensor,percentile=per)
+
            
         maxlim = max(maxlim,max(kAnalytic))
         nowtime = datetime.now()
         dt_string = nowtime.strftime("%Y%m%d%H%M%S")
-        np.save("./plot-data/"+dt_string+"B"+str(bgd)+choice+"T"+str(np.round(timeon,2))+sensor+"Per"+str(per),kAnalytic)
-        np.save("./plot-data/"+dt_string+"B"+str(bgd)+choice+"T"+str(np.round(timeon,2))+sensor+"Per"+str(per)+"-energy",energy)
+        if(~axions):
+            np.save("./plot-data/"+dt_string+"B"+str(bgd)+choice+"T"+str(np.round(timeon,2))+sensor+"Per"+str(per),kAnalytic)
+            np.save("./plot-data/"+dt_string+"B"+str(bgd)+choice+"T"+str(np.round(timeon,2))+sensor+"Per"+str(per)+"-energy",energy)
 
         #--- plotting
-        print(i)
-        print("Producing the plot for:"+labelDict[choice])
-        print("kappa min", min(kAnalytic))
-        print("Energies:")
-        print(repr(energy))
-        print("k Values:")
-        print(repr(kAnalytic))
-        
-        ax.plot(energy,kAnalytic,c="C"+str(i),label=labelDict[choice]+","+parameterMap[keys][-3]+","+"bgd="+str(parameterMap[keys][1])+" Hz"+","+"mu="+str(parameterMap[keys][-2])+" Hz")
-    
-    
-    #--- plot formatting
-    ax.set_yscale("log")
-    ax.set_xscale("log")
+        if(axions):
+            print(i)
+            print("Producing the plot for:"+labelDict[choice])
+            print("$g_agamma  min", min(kAnalytic))
+            print("Energies:")
+            print(repr(energy))
+            print("g_agamma  Values:")
+            print(repr(kAnalytic))
 
-    #ax.set_ylim(1e-18,maxlim)
-    ax.set_xlim(0.1,30)
-    ax.set_xticks([0.1,0.2,0.5,1.0,2.0,5.0,10,20])
+            ax.plot(energy,kAnalytic,c="C"+str(i),label=labelDict[choice]+","+parameterMap[keys][-3]+","+"bgd="+str(parameterMap[keys][1])+" Hz"+","+"mu="+str(parameterMap[keys][-2])+" Hz")
 
-    ax.xaxis.set_major_formatter(formatter)
+            #--- plot formatting
+            ax.set_yscale("log")
+            ax.set_xscale("log")
 
-    plt.xlabel("mass [eV/c$^2$]")
-    plt.grid(linestyle="--")
-    plt.ylabel("$\kappa$")
-    plt.legend()
-    plt.show()
+            #ax.set_ylim(1e-18,maxlim)
+            ax.set_xlim(0.1,30)
+            ax.set_xticks([0.1,0.2,0.5,1.0,2.0,5.0,10,20])
+
+            ax.xaxis.set_major_formatter(formatter)
+
+            plt.xlabel("mass [eV/c$^2$]")
+            plt.grid(linestyle="--")
+            plt.ylabel("$g_{a\gamma} $ [eV/Tesla]")
+            plt.legend()
+            plt.show()
+        else:
+            #print(i)
+            #print("Producing the plot for:"+labelDict[choice])
+            #print("kappa min", min(kAnalytic))
+            #print("Energies:")
+            #print(repr(energy))
+            #print("k Values:")
+            #print(repr(kAnalytic))
+
+            ax.plot(energy,kAnalytic,c="C"+str(i),label=labelDict[choice]+","+parameterMap[keys][-3]+","+"bgd="+str(parameterMap[keys][1])+" Hz"+","+"mu="+str(parameterMap[keys][-2])+" Hz")
+
+
+            #--- plot formatting
+            ax.set_yscale("log")
+            ax.set_xscale("log")
+
+            #ax.set_ylim(1e-18,maxlim)
+            ax.set_xlim(0.1,30)
+            ax.set_xticks([0.1,0.2,0.5,1.0,2.0,5.0,10,20])
+
+            ax.xaxis.set_major_formatter(formatter)
+
+            plt.xlabel("mass [eV/c$^2$]")
+            plt.grid(linestyle="--")
+            plt.ylabel("$\kappa$")
+            plt.legend()
+            plt.show()
+            
+                
 
 if __name__ == "__main__":
     main(sys.argv[1:])
