@@ -1,4 +1,4 @@
-import computation
+import boost as computation
 
 from scipy import integrate
 from scipy import stats
